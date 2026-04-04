@@ -1,6 +1,47 @@
 [gd_scene format=3 uid="uid://bgp158j5tnqyq"]
 
 [ext_resource type="Script" uid="uid://bxehkt8nvmyi8" path="res://main_scene.gd" id="1_3mqji"]
+[ext_resource type="Material" uid="uid://brj2jayoo0l0d" path="res://addons/prototype_mini_bundle/M_prototype_blue.tres" id="2_rpqi1"]
+[ext_resource type="Script" uid="uid://dmq0vva4chsn4" path="res://player_movement.gd" id="2_uxrcv"]
+[ext_resource type="Material" uid="uid://dgjiw8udooecr" path="res://addons/prototype_mini_bundle/M_prototype_dark.tres" id="2_x4av3"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uxrcv"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rf2cd"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3mqji"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x4av3"]
+size = Vector3(100, 1, 100)
 
 [node name="Root" type="Node3D" unique_id=493264250]
 script = ExtResource("1_3mqji")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1667873002]
+transform = Transform3D(1, 0, 0, 0, 0.31945553, 0.94760126, 0, -0.94760126, 0.31945553, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1249868960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.5272865, 13.120675)
+
+[node name="PlayerMovement" type="PlayerMovement" parent="." unique_id=1885467843]
+script = ExtResource("2_uxrcv")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="PlayerMovement" unique_id=1291764864]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0248148, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerMovement/RigidBody3D" unique_id=1537745892]
+shape = SubResource("CapsuleShape3D_uxrcv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerMovement/RigidBody3D/CollisionShape3D" unique_id=987630147]
+mesh = SubResource("CapsuleMesh_rf2cd")
+surface_material_override/0 = ExtResource("2_rpqi1")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=216985406]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=924180002]
+shape = SubResource("BoxShape3D_3mqji")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/CollisionShape3D" unique_id=803928493]
+mesh = SubResource("BoxMesh_x4av3")
+surface_material_override/0 = ExtResource("2_x4av3")
