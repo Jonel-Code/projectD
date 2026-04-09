@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bg78ooohrf2dt"]
+
+[ext_resource type="Script" uid="uid://hkjp034wov6l" path="res://debug/debug_sphere.gd" id="1_woato"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_loy1g"]
+radius = 0.25
+height = 0.5
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_loy1g"]
+shading_mode = 0
+albedo_color = Color(0.13333334, 1, 0.1254902, 1)
+stencil_flags = 2
+
+[node name="DebugSphere" type="Node3D" unique_id=399535094]
+script = ExtResource("1_woato")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=654616231]
+mesh = SubResource("SphereMesh_loy1g")
+surface_material_override/0 = SubResource("ORMMaterial3D_loy1g")

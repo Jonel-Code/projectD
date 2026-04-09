@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cykr7r1jyak3s"]
+
+[ext_resource type="Material" uid="uid://brj2jayoo0l0d" path="res://addons/prototype_mini_bundle/M_prototype_blue.tres" id="1_ea3dl"]
+[ext_resource type="Script" uid="uid://bvvh1hjkceb0m" path="res://content/character/playable_character.gd" id="1_wlbsg"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wlbsg"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_046wa"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1387836369]
+script = ExtResource("1_wlbsg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=235008140]
+shape = SubResource("CapsuleShape3D_wlbsg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=999601859]
+mesh = SubResource("CapsuleMesh_046wa")
+surface_material_override/0 = ExtResource("1_ea3dl")

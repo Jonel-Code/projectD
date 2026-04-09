@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://b7teeuglk8nbw"]
+
+[ext_resource type="Script" uid="uid://b5bshysivxcu2" path="res://ai_enemy.gd" id="1_g3imv"]
+[ext_resource type="Material" uid="uid://1nvrnylcajfg" path="res://addons/prototype_mini_bundle/M_prototype_red.tres" id="1_jpo2v"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y8n8g"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_y8n8g"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1209109561 node_paths=PackedStringArray("nav_3d")]
+collision_layer = 2147483648
+script = ExtResource("1_g3imv")
+nav_3d = NodePath("NavigationAgent3D")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=555662384]
+target_desired_distance = 2.0
+simplify_path = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1109821317]
+shape = SubResource("CapsuleShape3D_y8n8g")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=917777131]
+material_override = ExtResource("1_jpo2v")
+mesh = SubResource("CapsuleMesh_y8n8g")

@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://b0haee0bh7jwl"]
+
+[ext_resource type="PackedScene" uid="uid://0vmntyr615js" path="res://addons/prototype_mini_bundle/prop_cube.tscn" id="1_wv7cx"]
+
+[node name="Node3D" type="Node3D" unique_id=1679561906]
+
+[node name="PropCube" parent="." unique_id=895175258 instance=ExtResource("1_wv7cx")]
