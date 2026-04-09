@@ -7,8 +7,11 @@
 [ext_resource type="Script" uid="uid://bdkbbs27gwt1s" path="res://camera_3d.gd" id="3_rf2cd"]
 [ext_resource type="PackedScene" uid="uid://cykr7r1jyak3s" path="res://content/character/playable_character.tscn" id="5_torvr"]
 [ext_resource type="PackedScene" uid="uid://dxvxy65pv5hoe" path="res://addons/prototype_mini_bundle/prop_sphere.tscn" id="6_a814b"]
+[ext_resource type="Script" uid="uid://cp5u65bk8tsvu" path="res://systems/components/fire_bullet_component.gd" id="7_3hf6u"]
 [ext_resource type="Material" uid="uid://1nvrnylcajfg" path="res://addons/prototype_mini_bundle/M_prototype_red.tres" id="7_5crlr"]
+[ext_resource type="Script" uid="uid://cdy55rcoenb36" path="res://systems/components/player_movement_component.gd" id="7_p5x2j"]
 [ext_resource type="Script" uid="uid://dsn3cmpc66ykh" path="res://spawner.gd" id="8_hbc2u"]
+[ext_resource type="Script" uid="uid://bkvj2miasjxyi" path="res://systems/components/mouse_input_component.gd" id="8_yvb8b"]
 [ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_uxrcv"]
@@ -42,13 +45,11 @@ size = Vector3(10, 1, 5)
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_8xkvn"]
 transparency = 1
 
-[node name="Root" type="Node3D" unique_id=493264250 node_paths=PackedStringArray("player_node", "character", "character_bullet_origin")]
+[node name="Root" type="Node3D" unique_id=493264250 node_paths=PackedStringArray("player_node")]
 script = ExtResource("1_3mqji")
 spawn_ai_scene = ExtResource("9_torvr")
 debug_target = ExtResource("3_8xkvn")
 player_node = NodePath("PlayerMovement/CharacterBody3D")
-character = NodePath("PlayerMovement/CharacterBody3D")
-character_bullet_origin = NodePath("PlayerMovement/CharacterBody3D/CharacterBulletOrigin")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2099120327]
 environment = SubResource("Environment_rf2cd")
@@ -75,7 +76,24 @@ camera_downward_angle = 50.0
 [node name="CharacterBody3D" parent="PlayerMovement" unique_id=1387836369 instance=ExtResource("5_torvr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.724269, 0)
 collision_layer = 2147483648
-ms = 10.0
+
+[node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("bullet_origin_socket")]
+unique_name_in_owner = true
+script = ExtResource("7_3hf6u")
+bullet_origin_socket = NodePath("../CharacterBulletOrigin")
+metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
+
+[node name="PlayerMovementComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=645840862 node_paths=PackedStringArray("character_body")]
+unique_name_in_owner = true
+script = ExtResource("7_p5x2j")
+character_body = NodePath("..")
+metadata/_custom_type_script = "uid://cdy55rcoenb36"
+
+[node name="MouseInputComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1876481701 node_paths=PackedStringArray("object_to_ignore")]
+unique_name_in_owner = true
+script = ExtResource("8_yvb8b")
+object_to_ignore = [NodePath("..")]
+metadata/_custom_type_script = "uid://bkvj2miasjxyi"
 
 [node name="CharacterBulletOrigin" type="Node3D" parent="PlayerMovement/CharacterBody3D" unique_id=2011840548]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35580635, 0)
@@ -119,4 +137,5 @@ transparency = 0.84
 mesh = SubResource("BoxMesh_8xkvn")
 surface_material_override/0 = SubResource("ORMMaterial3D_8xkvn")
 
+[connection signal="mouse_input" from="PlayerMovement/CharacterBody3D/MouseInputComponent" to="PlayerMovement/CharacterBody3D/FireBulletComponent" method="fire_bullet_to"]
 [connection signal="spawn_request" from="NavigationRegion3D/Spawner" to="." method="_spawn_enemy_at"]

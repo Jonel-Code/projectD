@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://ybbabjtnjfr4"]
+
+[ext_resource type="Script" uid="uid://c40d8u6ipgt6n" path="res://content/props/special_effect_zone.gd" id="1_4r4ts"]
+[ext_resource type="Script" uid="uid://cst0slg0rrkem" path="res://systems/resources/effect_resource.gd" id="2_ptfbs"]
+
+[sub_resource type="Resource" id="Resource_ptfbs"]
+script = ExtResource("2_ptfbs")
+effectName = ""
+effectTypes = 3
+metadata/_custom_type_script = "uid://cst0slg0rrkem"
+
+[node name="SpecialEffectZone" type="Node3D" unique_id=2138811538]
+script = ExtResource("1_4r4ts")
+effect_resource = SubResource("Resource_ptfbs")
