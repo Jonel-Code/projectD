@@ -4,10 +4,18 @@ class_name FireBulletComponent extends Node
 @export var bullet_origin_socket: Node3D
 @export var mouse_input_component: MouseInputComponent
 @export var bullet_interval: float = 0.5
+@export var collision_to_ignore: Array[CollisionObject3D] = []
+@export var bullet_dmg: float = 10
 
 var debug_ray_cast: Array = []
 var bullet_range: float = 1000
 var fire_cooldown_timer: float = 0
+var bullet_collider_ignore_list: Array = []
+var bullet_collision_mask: int = 4294967295
+
+func _ready() -> void:
+    for item in collision_to_ignore:
+        bullet_collider_ignore_list.append(item.get_rid())
 
 func _process(delta: float) -> void:
     if mouse_input_component != null:
@@ -30,11 +38,29 @@ func _process(delta: float) -> void:
 func fire_bullet_to(data: MouseInputComponent.MouseInputData) -> void:
     if bullet_origin_socket != null:
         var bullet_origin = bullet_origin_socket.global_position
-        if data.hit_type == MouseInputComponent.MouseInputHitType.ENEMY:
-            draw_debug_line(bullet_origin, data.hit_position, Color.RED)
+        var end = data.hit_position
         if data.hit_type == MouseInputComponent.MouseInputHitType.GROUND:
-            var end = get_bullet_end_position(data.hit_position)
-            draw_debug_line(bullet_origin, end, Color.GREEN)
+            end = get_bullet_end_position(data.hit_position)
+        else:
+            var adjustement = (end - bullet_origin).normalized() * bullet_range
+            end = bullet_origin + adjustement
+        _check_bullet_hit(bullet_origin, end)
+
+func _check_bullet_hit(start: Vector3, end: Vector3) -> void:
+    var query = PhysicsRayQueryParameters3D.create(start, end, bullet_collision_mask, bullet_collider_ignore_list)
+    var result = get_viewport().get_world_3d().direct_space_state.intersect_ray(query)
+    var new_end = end
+    if result:
+        var dmg = bullet_dmg
+        if result.collider is AiEnemy:
+            var enemy = result.collider as AiEnemy
+            var force = (end - start).normalized() * 5
+            enemy.apply_impact(result.position, force)
+            # TODO: identify the dmg base on the hit postion
+        new_end = result.position
+        DamageSystem.apply_damage(result.collider, dmg)
+    draw_debug_line(start, new_end, Color.GREEN)
+
 
 func get_bullet_end_position(worldspace_mouse_input: Vector3) -> Vector3:
     if bullet_origin_socket != null:

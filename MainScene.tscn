@@ -86,12 +86,13 @@ camera_downward_angle = 50.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.724269, 0)
 collision_layer = 2147483648
 
-[node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("bullet_origin_socket", "mouse_input_component")]
+[node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("bullet_origin_socket", "mouse_input_component", "collision_to_ignore")]
 unique_name_in_owner = true
 script = ExtResource("7_3hf6u")
 bullet_origin_socket = NodePath("../CharacterBulletOrigin")
 mouse_input_component = NodePath("../MouseInputComponent")
-bullet_interval = 0.1
+bullet_interval = 0.3
+collision_to_ignore = [NodePath("..")]
 metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
 
 [node name="PlayerMovementComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=645840862 node_paths=PackedStringArray("character_body")]
@@ -118,7 +119,7 @@ use_edge_connections = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.230715, 1.8585148, -22.221779)
 material_override = ExtResource("7_5crlr")
 script = ExtResource("8_hbc2u")
-spawn_count = 100
+spawn_count = 10
 
 [node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D" unique_id=216985406]
 collision_layer = 15

@@ -8,7 +8,7 @@
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_y8n8g"]
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1209109561 node_paths=PackedStringArray("nav_3d")]
-collision_layer = 2147483648
+collision_layer = 2147484160
 script = ExtResource("1_g3imv")
 nav_3d = NodePath("NavigationAgent3D")
 
