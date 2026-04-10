@@ -2,17 +2,30 @@ class_name FireBulletComponent extends Node
 
 
 @export var bullet_origin_socket: Node3D
+@export var mouse_input_component: MouseInputComponent
+@export var bullet_interval: float = 0.5
 
 var debug_ray_cast: Array = []
 var bullet_range: float = 1000
+var fire_cooldown_timer: float = 0
 
 func _process(delta: float) -> void:
-    for i in range(debug_ray_cast.size() - 1, -1, -1):
-        debug_ray_cast[i].life_time += delta
-        if debug_ray_cast[i].life_time >= 1:
-            debug_ray_cast[i].actor.queue_free()
-            debug_ray_cast.remove_at(i)
-    
+    if mouse_input_component != null:
+        for i in range(debug_ray_cast.size() - 1, -1, -1):
+            debug_ray_cast[i].life_time += delta
+            if debug_ray_cast[i].life_time >= 1:
+                debug_ray_cast[i].actor.queue_free()
+                debug_ray_cast.remove_at(i)
+
+        if fire_cooldown_timer <= 0:
+            if Input.is_action_pressed("fire_bullet"):
+                fire_cooldown_timer = bullet_interval
+                var mouse_pos = get_viewport().get_mouse_position()
+                var result = mouse_input_component.create_raycast_from_camera(mouse_pos)
+                fire_bullet_to(result)
+        else:
+            fire_cooldown_timer -= delta
+
 
 func fire_bullet_to(data: MouseInputComponent.MouseInputData) -> void:
     if bullet_origin_socket != null:
@@ -28,7 +41,7 @@ func get_bullet_end_position(worldspace_mouse_input: Vector3) -> Vector3:
         var bullet_origin = bullet_origin_socket.global_position
         # ground target uses the target as basis for the bullet angle
         # Adjust the bullet end to match the y (elevation) of the character's bullet origin
-        # straight forward approach is just simply using y value of bullet origin as y value to the target point, this will introduce misalignment.
+        # straightforward approach is just simply using y value of bullet origin as y value to the target point, this will introduce misalignment.
         # the ideal approach is to calculate the "linear interpolation" for a given y value in a segment (target_point -> camera_position)
         var tar_y = bullet_origin.y
         var end = get_viewport().get_camera_3d().global_position
@@ -41,7 +54,7 @@ func get_bullet_end_position(worldspace_mouse_input: Vector3) -> Vector3:
         return bullet_origin + ((adjusted - bullet_origin).normalized() * bullet_range)
 
     return worldspace_mouse_input
-    
+
     
 func draw_debug_line(start: Vector3, end: Vector3, color: Color):
     var mesh_instance = MeshInstance3D.new()

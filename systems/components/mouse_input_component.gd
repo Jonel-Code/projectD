@@ -12,23 +12,12 @@ class MouseInputData:
 @export var object_to_ignore: Array[CollisionObject3D] = [];
 @export var raycast_length: float = 1000
 
-signal mouse_input(data: MouseInputData)
-
 var mouse_target_rid_ignore: Array = []
 var mouse_target_collider: int = 4294967295
 
 func _ready() -> void:
     for i in range(object_to_ignore.size() - 1):
         mouse_target_rid_ignore.append(object_to_ignore[i].get_rid())
-
-
-func _process(_delta: float) -> void:
-    if Input.is_action_just_pressed("point_target"):
-        var mouse_pos = get_viewport().get_mouse_position()
-        var data = create_raycast_from_camera(mouse_pos)
-        if data != null:
-            mouse_input.emit(data)
-
 
 func create_raycast_from_camera(mouse_pos: Vector2) -> MouseInputData:
     var main_camera = get_viewport().get_camera_3d()
