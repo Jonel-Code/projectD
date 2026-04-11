@@ -1,6 +1,7 @@
 class_name FireBulletComponent extends Node
 
 
+@export var particle_component: ParticleComponent
 @export var bullet_origin_socket: Node3D
 @export var mouse_input_component: MouseInputComponent
 @export var bullet_interval: float = 0.5
@@ -59,7 +60,10 @@ func _check_bullet_hit(start: Vector3, end: Vector3) -> void:
             # TODO: identify the dmg base on the hit postion
         new_end = result.position
         DamageSystem.apply_damage(result.collider, dmg)
-    draw_debug_line(start, new_end, Color.GREEN)
+    # draw_debug_line(start, new_end, Color.GREEN)
+    if particle_component != null:
+        var impact_rot = (end - start).normalized()
+        particle_component.spawn_particle_at(new_end, impact_rot)
 
 
 func get_bullet_end_position(worldspace_mouse_input: Vector3) -> Vector3:
