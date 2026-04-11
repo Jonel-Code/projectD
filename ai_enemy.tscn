@@ -2,15 +2,35 @@
 
 [ext_resource type="Script" uid="uid://b5bshysivxcu2" path="res://ai_enemy.gd" id="1_g3imv"]
 [ext_resource type="Material" uid="uid://1nvrnylcajfg" path="res://addons/prototype_mini_bundle/M_prototype_red.tres" id="1_jpo2v"]
+[ext_resource type="Script" uid="uid://dlyctrqmrc5s4" path="res://systems/components/health_component.gd" id="3_n1xg6"]
+[ext_resource type="PackedScene" uid="uid://cck65cygofho3" path="res://scenes/ui/health_bar.tscn" id="4_10dn1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_y8n8g"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_y8n8g"]
 
+[sub_resource type="QuadMesh" id="QuadMesh_10dn1"]
+size = Vector2(3, 0.3)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_n1xg6"]
+viewport_path = NodePath("MeshInstance3D/HpBarViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n1xg6"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_n1xg6")
+billboard_mode = 1
+billboard_keep_scale = true
+
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1209109561 node_paths=PackedStringArray("nav_3d")]
 collision_layer = 2147484160
 script = ExtResource("1_g3imv")
 nav_3d = NodePath("NavigationAgent3D")
+
+[node name="HealthComponent" type="Node" parent="." unique_id=1116687905]
+unique_name_in_owner = true
+script = ExtResource("3_n1xg6")
+metadata/_custom_type_script = "uid://dlyctrqmrc5s4"
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=555662384]
 target_desired_distance = 2.0
@@ -22,3 +42,12 @@ shape = SubResource("CapsuleShape3D_y8n8g")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=917777131]
 material_override = ExtResource("1_jpo2v")
 mesh = SubResource("CapsuleMesh_y8n8g")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1758863537]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 1.2670279, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_10dn1")
+surface_material_override/0 = SubResource("StandardMaterial3D_n1xg6")
+
+[node name="HpBarViewport" parent="MeshInstance3D" unique_id=660115232 instance=ExtResource("4_10dn1")]
+unique_name_in_owner = true

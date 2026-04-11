@@ -14,9 +14,9 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+# # Called every frame. 'delta' is the elapsed time since the previous frame.
+# func _process(delta: float) -> void:
+# 	pass
 
 
 func register_object(node: Node) -> void:
@@ -43,3 +43,10 @@ func apply_damage(node: Node, damage: float) -> void:
 		health_data[node_id].value -= damage
 		var cb: Callable = health_data_delegate[node_id]
 		cb.call(health_data[node_id])
+
+
+func get_value(node: Node) -> HealthAttribute:
+	var node_id = node.get_instance_id()
+	if health_data.has(node_id):
+		return health_data[node_id]
+	return null

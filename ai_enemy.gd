@@ -16,6 +16,11 @@ func setup(navtarget: Node3D) -> void:
 func _ready() -> void:
 	DamageSystem.register_object(self )
 	DamageSystem.register_delegate(self , on_health_changed)
+
+	var current = DamageSystem.get_value(self )
+	if current != null:
+		update_hp_bar(current)
+
 	if nav_3d != null and target_node != null:
 		nav_3d.target_position = target_node.position
 
@@ -23,7 +28,7 @@ func _exit_tree() -> void:
 	DamageSystem.unregister_object(self )
 
 func on_health_changed(health: DamageSystem.HealthAttribute) -> void:
-	print(self.name, " remaining health: ", health.value)
+	update_hp_bar(health)
 	if health.value <= 0:
 		self.queue_free()
 
@@ -59,3 +64,6 @@ func apply_impact(world_position: Vector3, force: Vector3):
 	var local_pos = to_local(world_position)
 	print("applying impact on: ", local_pos)
 	velocity += force
+
+func update_hp_bar(health: DamageSystem.HealthAttribute) -> void:
+	%HpBarViewport.update_value((health.value / health.max_value) * 100)
