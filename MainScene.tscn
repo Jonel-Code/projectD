@@ -125,7 +125,7 @@ use_edge_connections = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.230715, 1.8585148, -22.221779)
 material_override = ExtResource("7_5crlr")
 script = ExtResource("8_hbc2u")
-spawn_count = 10
+spawn_count = 50
 
 [node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D" unique_id=216985406]
 collision_layer = 15
