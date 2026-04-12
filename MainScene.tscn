@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://cdy55rcoenb36" path="res://systems/components/player_movement_component.gd" id="7_p5x2j"]
 [ext_resource type="Script" uid="uid://dsn3cmpc66ykh" path="res://spawner.gd" id="8_hbc2u"]
 [ext_resource type="Script" uid="uid://bkvj2miasjxyi" path="res://systems/components/mouse_input_component.gd" id="8_yvb8b"]
+[ext_resource type="PackedScene" uid="uid://dnyjj2l4n1dqr" path="res://scenes/nodes/bullet_effect.tscn" id="9_mctxq"]
 [ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_uxrcv"]
@@ -99,6 +100,7 @@ bullet_origin_socket = NodePath("../CharacterBulletOrigin")
 mouse_input_component = NodePath("../MouseInputComponent")
 bullet_interval = 0.2
 collision_to_ignore = [NodePath("..")]
+bullet_particle_scene = ExtResource("9_mctxq")
 metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
 
 [node name="PlayerMovementComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=645840862 node_paths=PackedStringArray("character_body")]

@@ -10,7 +10,7 @@ curve = SubResource("Curve_di0w6")
 [sub_resource type="Gradient" id="Gradient_m5i3k"]
 interpolation_mode = 2
 offsets = PackedFloat32Array(0, 0.5140713, 1)
-colors = PackedColorArray(0, 0, 0, 0, 0.9411765, 0.5176471, 0.26666668, 1, 1, 0.7254902, 0.4392157, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.9411765, 0.5176471, 0.26666668, 1, 1, 0.7254902, 0.4392157, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_di0w6"]
 gradient = SubResource("Gradient_m5i3k")
@@ -41,8 +41,8 @@ collision_friction = 0.0
 collision_bounce = 0.0
 
 [sub_resource type="Curve" id="Curve_m5i3k"]
-_data = [Vector2(0.013536379, 0.15725803), 0.0, 3.7235374, 0, 0, Vector2(0.22504231, 0.72580636), 0.0, 0.0, 0, 0, Vector2(0.4534687, 0.6290322), 0.0, 0.0, 0, 0, Vector2(0.7411168, 0.44354832), 0.0, 0.0, 0, 0]
-point_count = 4
+_data = [Vector2(0.04399324, 0.11290318), 0.0, 0.0, 0, 0, Vector2(0.55668366, 0.51612896), 0.0, 0.0, 0, 0, Vector2(0.75803727, 0.8104838), 0.0, 0.0, 0, 0, Vector2(0.91370565, 0.49999994), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m5i3k"]
 cull_mode = 2

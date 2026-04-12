@@ -1,3 +1,26 @@
 [gd_scene format=3 uid="uid://beihaj1ay0gxi"]
 
-[node name="Bullet" type="Node3D" unique_id=1789557174]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ipnbt"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 11.34
+emission_ring_radius = 0.2
+emission_ring_inner_radius = 0.15
+emission_ring_cone_angle = 90.0
+direction = Vector3(0, 0, 1)
+spread = 5.0
+initial_velocity_min = 5.0
+initial_velocity_max = 5.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_ipnbt"]
+radius = 0.05
+height = 0.1
+
+[node name="GPUParticles3D" type="GPUParticles3D" unique_id=1285933214]
+emitting = false
+amount = 10
+one_shot = true
+explosiveness = 1.0
+trail_lifetime = 5.0
+process_material = SubResource("ParticleProcessMaterial_ipnbt")
+draw_pass_1 = SubResource("SphereMesh_ipnbt")

@@ -9,6 +9,7 @@ class_name FireBulletComponent extends Node
 @export var bullet_dmg: float = 10
 @export var bullet_speed: float = 1000
 @export var bullet_range: float = 1000
+@export var bullet_particle_scene: PackedScene
 
 class BulletData:
 	var current_delta: float
@@ -17,7 +18,6 @@ class BulletData:
 	var direction: Vector3
 	var accel: float
 	var bullet_lifetime: float
-
 
 var spawned_bullet: Array[BulletData] = []
 var debug_ray_cast: Array = []
@@ -61,12 +61,25 @@ func _process(delta: float) -> void:
 				line_end = spawned_bullet[i].end
 
 		# TODO: render projectile particle
-		draw_debug_line(line_start, line_end, Color.RED, 0.1)
+		# draw_debug_line(line_start, line_end, Color.RED, 0.1)
 		var hit = _check_bullet_hit(line_start, line_end)
 		if hit:
 			spawned_bullet.remove_at(i)
 			continue
 		spawned_bullet[i].current_delta = cur_delta
+
+
+func spawn_bullet_particle_at(start: Vector3, end: Vector3) -> void:
+	if bullet_particle_scene != null:
+		var position = (start + end) / 2
+		var rotation = (end - start).normalized()
+		var instance = bullet_particle_scene.instantiate() as BulletEffect
+		instance.set_length(end.distance_to(start))
+		instance.set_body_lifetime(get_process_delta_time() * 2) # show only the body for 2 frames
+		var euler_rot = Basis.looking_at(rotation, Vector3.UP).get_euler()
+		instance.rotation = euler_rot
+		add_child(instance)
+		instance.global_position = position
 
 
 func fire_bullet(data: MouseInputComponent.MouseInputData) -> void:
@@ -96,17 +109,18 @@ func _check_bullet_hit(start: Vector3, end: Vector3) -> bool:
 	if result:
 		var dmg = bullet_dmg
 		did_hit = true
+		new_end = result.position
 		if result.collider is AiEnemy:
 			var enemy = result.collider as AiEnemy
 			var force = (end - start).normalized() * 5
 			enemy.apply_impact(result.position, force)
 			# TODO: identify the dmg base on the hit postion
-			new_end = result.position
 			DamageSystem.apply_damage(result.collider, dmg)
 			# draw_debug_line(start, new_end, Color.GREEN)
 			if particle_component != null:
 				var impact_rot = (end - start).normalized()
-				particle_component.spawn_particle_at(new_end, impact_rot)
+				particle_component.spawn_particle_at(new_end - impact_rot, impact_rot)
+	spawn_bullet_particle_at(start, new_end)
 	return did_hit
 
 
