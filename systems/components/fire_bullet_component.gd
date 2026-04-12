@@ -9,6 +9,7 @@ class_name FireBulletComponent extends Node
 @export var bullet_dmg: float = 10
 @export var bullet_speed: float = 1000
 @export var bullet_range: float = 1000
+@export var bullet_particle_gap: float = 0.5
 @export var bullet_particle_scene: PackedScene
 
 class BulletData:
@@ -18,6 +19,7 @@ class BulletData:
 	var direction: Vector3
 	var accel: float
 	var bullet_lifetime: float
+	var particle_delta: float
 
 var spawned_bullet: Array[BulletData] = []
 var debug_ray_cast: Array = []
@@ -61,8 +63,12 @@ func _process(delta: float) -> void:
 				line_end = spawned_bullet[i].end
 
 		# TODO: render projectile particle
-		# draw_debug_line(line_start, line_end, Color.RED, 0.1)
-		var hit = _check_bullet_hit(line_start, line_end)
+		var particle_spawned = spawned_bullet[i].origin + (dir * spawned_bullet[i].particle_delta * spawned_bullet[i].accel)
+		var particle_gap = particle_spawned.distance_to(line_end)
+		var should_draw_particle = particle_gap > bullet_particle_gap
+		if should_draw_particle:
+			spawned_bullet[i].particle_delta = cur_delta
+		var hit = _check_bullet_hit(line_start, line_end, should_draw_particle)
 		if hit:
 			spawned_bullet.remove_at(i)
 			continue
@@ -101,7 +107,7 @@ func fire_bullet(data: MouseInputComponent.MouseInputData) -> void:
 		spawned_bullet.append(new_bullet)
 
 
-func _check_bullet_hit(start: Vector3, end: Vector3) -> bool:
+func _check_bullet_hit(start: Vector3, end: Vector3, spawn_particle: bool = true) -> bool:
 	var query = PhysicsRayQueryParameters3D.create(start, end, bullet_collision_mask, bullet_collider_ignore_list)
 	var result = get_viewport().get_world_3d().direct_space_state.intersect_ray(query)
 	var new_end = end
@@ -120,7 +126,8 @@ func _check_bullet_hit(start: Vector3, end: Vector3) -> bool:
 			if particle_component != null:
 				var impact_rot = (end - start).normalized()
 				particle_component.spawn_particle_at(new_end - impact_rot, impact_rot)
-	spawn_bullet_particle_at(start, new_end)
+	if spawn_particle:
+		spawn_bullet_particle_at(start, new_end)
 	return did_hit
 
 
