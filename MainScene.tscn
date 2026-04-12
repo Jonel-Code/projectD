@@ -97,7 +97,7 @@ script = ExtResource("7_3hf6u")
 particle_component = NodePath("../../../ParticleComponent")
 bullet_origin_socket = NodePath("../CharacterBulletOrigin")
 mouse_input_component = NodePath("../MouseInputComponent")
-bullet_interval = 0.3
+bullet_interval = 0.2
 collision_to_ignore = [NodePath("..")]
 metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
 

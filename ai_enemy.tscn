@@ -10,7 +10,7 @@
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_y8n8g"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_10dn1"]
-size = Vector2(3, 0.3)
+size = Vector2(2, 0.1)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_n1xg6"]
 viewport_path = NodePath("MeshInstance3D/HpBarViewport")
@@ -36,6 +36,7 @@ metadata/_custom_type_script = "uid://dlyctrqmrc5s4"
 target_desired_distance = 2.0
 simplify_path = true
 avoidance_enabled = true
+radius = 0.3
 avoidance_layers = 16
 avoidance_mask = 16
 

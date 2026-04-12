@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://cwu2reykli3px"]
+
+[sub_resource type="Curve" id="Curve_di0w6"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.40966013, 0.91853565), 0.0, 0.0, 0, 0, Vector2(0.49373883, 0.48977572), 4.0309286, 4.0309286, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_daf33"]
+curve = SubResource("Curve_di0w6")
+
+[sub_resource type="Gradient" id="Gradient_m5i3k"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.5140713, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.9411765, 0.5176471, 0.26666668, 1, 1, 0.7254902, 0.4392157, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_di0w6"]
+gradient = SubResource("Gradient_m5i3k")
+
+[sub_resource type="Curve" id="Curve_daf33"]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0.019677997, 0), 0.0, 0.0, 0, 0, Vector2(0.76744187, 3), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_m2io8"]
+curve = SubResource("Curve_daf33")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_m5i3k"]
+inherit_velocity_ratio = 1.0
+direction = Vector3(0, 0, -1)
+spread = 0.0
+initial_velocity_min = 100.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 0, 0)
+scale_over_velocity_min = 1.0
+scale_over_velocity_max = 20.0
+scale_over_velocity_curve = SubResource("CurveTexture_m2io8")
+color = Color(0.9764706, 0.6156863, 0, 1)
+color_ramp = SubResource("GradientTexture1D_di0w6")
+alpha_curve = SubResource("CurveTexture_daf33")
+collision_mode = 1
+collision_friction = 0.0
+collision_bounce = 0.0
+
+[sub_resource type="Curve" id="Curve_m5i3k"]
+_data = [Vector2(0.013536379, 0.15725803), 0.0, 3.7235374, 0, 0, Vector2(0.22504231, 0.72580636), 0.0, 0.0, 0, 0, Vector2(0.4534687, 0.6290322), 0.0, 0.0, 0, 0, Vector2(0.7411168, 0.44354832), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m5i3k"]
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.9867516, 0.9867516, 0.9867516, 1)
+disable_receive_shadows = true
+billboard_keep_scale = true
+use_particle_trails = true
+proximity_fade_distance = 4096.0
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_di0w6"]
+material = SubResource("StandardMaterial3D_m5i3k")
+radius = 0.2
+curve = SubResource("Curve_m5i3k")
+
+[node name="GPUParticles3D" type="GPUParticles3D" unique_id=1611773546]
+ignore_occlusion_culling = true
+amount = 1
+lifetime = 0.5
+explosiveness = 1.0
+local_coords = true
+transform_align = 3
+trail_enabled = true
+trail_lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_m5i3k")
+draw_pass_1 = SubResource("TubeTrailMesh_di0w6")

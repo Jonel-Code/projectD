@@ -36,6 +36,6 @@ func spawn_particle_at(world_pos: Vector3, input_rot: Vector3 = Vector3.ZERO):
             par.rotation = Basis.looking_at(input_rot, Vector3.UP).get_euler()
             var container = ParticleContainer.new()
             container.particle = instance
-            container.life_time = par.lifetime * par.amount
+            container.life_time = par.lifetime
             spawned.append(container)
     pass
