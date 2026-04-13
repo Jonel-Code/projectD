@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://0oo8r8a2caql"]
+
+[sub_resource type="Animation" id="Animation_jq0lc"]
+length = 0.001
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimationPlayer/CharacterBody3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_qye8v"]
+resource_name = "new_animation"
+length = 0.23333333
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimationPlayer/CharacterBody3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 0.06666666, 1, 0, 0, -0.14395031, 0.98958486, 0.099999994, 1, 0, 0, 0.04363681, 0.9990474, 0.13333336, 1, 0, 0, 0.14609164, 0.98927104, 0.2, 1, 0, 0, 0, 0.99999994)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_8antg"]
+_data = {
+&"RESET": SubResource("Animation_jq0lc"),
+&"new_animation": SubResource("Animation_qye8v")
+}
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jq0lc"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jq0lc"]
+
+[node name="AnimationTest" type="Node3D" unique_id=519125319]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1133435977]
+libraries/ = SubResource("AnimationLibrary_8antg")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="AnimationPlayer" unique_id=73472375]
+transform = Transform3D(0.9999998, 0, 0, 0, 0.9999998, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AnimationPlayer/CharacterBody3D" unique_id=456408663]
+shape = SubResource("CapsuleShape3D_jq0lc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="AnimationPlayer/CharacterBody3D/CollisionShape3D" unique_id=330494480]
+mesh = SubResource("CapsuleMesh_jq0lc")

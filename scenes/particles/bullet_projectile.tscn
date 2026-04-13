@@ -26,7 +26,8 @@ radius = 0.1
 curve = SubResource("Curve_q33qf")
 
 [node name="GPUParticles3D" type="GPUParticles3D" unique_id=422088296]
-amount = 15
+emitting = false
+amount = 5
 lifetime = 0.2
 explosiveness = 1.0
 local_coords = true

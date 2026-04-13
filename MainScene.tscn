@@ -69,7 +69,7 @@ transform = Transform3D(0.9140417, 1.7730223e-08, -0.40562022, 0.40562022, -3.99
 shadow_enabled = true
 shadow_opacity = 0.86
 
-[node name="ParticleComponent" type="Node" parent="." unique_id=452415427]
+[node name="BodyImpactParticle" type="Node" parent="." unique_id=452415427]
 script = ExtResource("2_yvb8b")
 particle = ExtResource("3_3hf6u")
 metadata/_custom_type_script = "uid://dublh3wbt5134"
@@ -95,7 +95,7 @@ collision_layer = 2147483648
 [node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("particle_component", "bullet_origin_socket", "mouse_input_component", "collision_to_ignore")]
 unique_name_in_owner = true
 script = ExtResource("7_3hf6u")
-particle_component = NodePath("../../../ParticleComponent")
+particle_component = NodePath("../../../BodyImpactParticle")
 bullet_origin_socket = NodePath("../CharacterBulletOrigin")
 mouse_input_component = NodePath("../MouseInputComponent")
 bullet_interval = 0.2
