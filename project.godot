@@ -12,13 +12,17 @@ config_version=5
 
 config/name="Project D"
 run/main_scene="uid://bgp158j5tnqyq"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 DamageSystem="*uid://bsv4vs2oy74l7"
 ImpactSystem="*uid://ds4yd6axx2i3u"
+
+[dotnet]
+
+project/assembly_name="Project D"
 
 [input]
 

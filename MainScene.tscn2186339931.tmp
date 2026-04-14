@@ -1,0 +1,176 @@
+[gd_scene format=3 uid="uid://bgp158j5tnqyq"]
+
+[ext_resource type="Script" uid="uid://bxehkt8nvmyi8" path="res://main_scene.gd" id="1_3mqji"]
+[ext_resource type="Script" uid="uid://dmq0vva4chsn4" path="res://player_movement.gd" id="2_uxrcv"]
+[ext_resource type="Material" uid="uid://dgjiw8udooecr" path="res://addons/prototype_mini_bundle/M_prototype_dark.tres" id="2_x4av3"]
+[ext_resource type="Script" uid="uid://dublh3wbt5134" path="res://systems/components/particle_component.gd" id="2_yvb8b"]
+[ext_resource type="PackedScene" uid="uid://cj1tb3r2baewq" path="res://scenes/particles/bullet_projectile.tscn" id="3_3hf6u"]
+[ext_resource type="Script" uid="uid://bdkbbs27gwt1s" path="res://camera_3d.gd" id="3_rf2cd"]
+[ext_resource type="PackedScene" uid="uid://cykr7r1jyak3s" path="res://content/character/playable_character.tscn" id="5_torvr"]
+[ext_resource type="PackedScene" uid="uid://dxvxy65pv5hoe" path="res://addons/prototype_mini_bundle/prop_sphere.tscn" id="6_a814b"]
+[ext_resource type="Script" uid="uid://cp5u65bk8tsvu" path="res://systems/components/fire_bullet_component.gd" id="7_3hf6u"]
+[ext_resource type="Material" uid="uid://1nvrnylcajfg" path="res://addons/prototype_mini_bundle/M_prototype_red.tres" id="7_5crlr"]
+[ext_resource type="Script" uid="uid://cdy55rcoenb36" path="res://systems/components/player_movement_component.gd" id="7_p5x2j"]
+[ext_resource type="Script" uid="uid://dsn3cmpc66ykh" path="res://spawner.gd" id="8_hbc2u"]
+[ext_resource type="Script" uid="uid://bkvj2miasjxyi" path="res://systems/components/mouse_input_component.gd" id="8_yvb8b"]
+[ext_resource type="PackedScene" uid="uid://dnyjj2l4n1dqr" path="res://scenes/nodes/bullet_effect.tscn" id="9_mctxq"]
+[ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_uxrcv"]
+
+[sub_resource type="Sky" id="Sky_uxrcv"]
+sky_material = SubResource("PhysicalSkyMaterial_uxrcv")
+
+[sub_resource type="Environment" id="Environment_rf2cd"]
+background_mode = 2
+sky = SubResource("Sky_uxrcv")
+reflected_light_source = 2
+volumetric_fog_density = 0.01
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_torvr"]
+vertices = PackedVector3Array(-499.5, 0.8668556, -499.5, -499.5, 0.8668556, -41, -42.25, 0.8668556, -41, -41.25, 1.1168556, -41, -12, 1.1168556, -41, -11, 0.8668556, -41, 499.5, 0.8668556, -41, 499.5, 0.8668556, -499.5, -499.5, 0.8668556, -35.25, -42, 0.8668556, -35.25, -41.25, 9.366856, -24.75, -40.5, 9.366856, -24.75, -40.25, 9.116856, -25.25, -12, 9.116856, -25.25, 499.5, 0.8668556, -35.25, -11.25, 0.8668556, -35.25, -499.5, 0.8668556, -23.25, 10.5, 0.8668556, -23.25, 12, 0.8668556, -23.25, 499.5, 0.8668556, -23.25, -39.5, 10.366856, -24.25, -39.5, 10.366856, -5, -10.25, 10.366856, -5, -10.25, 10.366856, -24.25, -499.5, 0.8668556, -21, 10.75, 0.8668556, -21, 10, 0.8668556, -21.75, 12.25, 0.8668556, -21.5, 11.75, 0.8668556, -21, 499.5, 0.8668556, -21, 499.5, 0.8668556, -3, 3.5, 0.8668556, -3, -2.75, 0.8668556, -3, -499.5, 0.8668556, -3, -499.5, 0.8668556, 3.25, -2.75, 0.8668556, 3.25, 3.5, 1.1168556, -2, -4, 4.3668556, -2, -4, 4.3668556, 2, 3.5, 1.1168556, 2.25, 499.5, 0.8668556, 3.25, 3.5, 0.8668556, 3.25, 499.5, 0.8668556, 499.5, -499.5, 0.8668556, 499.5, -4.5, 5.8668556, 7, -4.5, 5.8668556, 11.25, 4.75, 5.8668556, 11.25, 4.75, 5.8668556, 7)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(3, 2, 0), PackedInt32Array(4, 3, 0), PackedInt32Array(5, 4, 0), PackedInt32Array(6, 5, 7), PackedInt32Array(7, 5, 0), PackedInt32Array(1, 2, 8), PackedInt32Array(8, 2, 9), PackedInt32Array(11, 10, 12), PackedInt32Array(12, 10, 3), PackedInt32Array(13, 12, 4), PackedInt32Array(4, 12, 3), PackedInt32Array(6, 14, 5), PackedInt32Array(5, 14, 15), PackedInt32Array(8, 9, 16), PackedInt32Array(16, 9, 17), PackedInt32Array(19, 18, 14), PackedInt32Array(14, 18, 15), PackedInt32Array(18, 17, 15), PackedInt32Array(15, 17, 9), PackedInt32Array(23, 22, 20), PackedInt32Array(20, 22, 21), PackedInt32Array(26, 25, 24), PackedInt32Array(17, 26, 16), PackedInt32Array(16, 26, 24), PackedInt32Array(29, 28, 27), PackedInt32Array(18, 19, 27), PackedInt32Array(27, 19, 29), PackedInt32Array(29, 30, 28), PackedInt32Array(28, 30, 31), PackedInt32Array(33, 24, 32), PackedInt32Array(32, 24, 25), PackedInt32Array(28, 31, 25), PackedInt32Array(25, 31, 32), PackedInt32Array(33, 32, 34), PackedInt32Array(34, 32, 35), PackedInt32Array(37, 36, 38), PackedInt32Array(38, 36, 39), PackedInt32Array(39, 36, 40), PackedInt32Array(40, 36, 30), PackedInt32Array(36, 31, 30), PackedInt32Array(40, 41, 39), PackedInt32Array(41, 40, 42), PackedInt32Array(43, 34, 35), PackedInt32Array(41, 42, 35), PackedInt32Array(35, 42, 43), PackedInt32Array(47, 46, 44), PackedInt32Array(44, 46, 45)]
+sample_partition_type = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3mqji"]
+size = Vector3(1000, 1, 1000)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x4av3"]
+size = Vector3(1000, 1, 1000)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_torvr"]
+size = Vector3(10, 1, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8xkvn"]
+size = Vector3(10, 1, 5)
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_8xkvn"]
+transparency = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4mcbk"]
+size = Vector3(30, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3hf6u"]
+size = Vector3(30, 1, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3hf6u"]
+size = Vector3(30, 1, 20)
+
+[node name="Root" type="Node3D" unique_id=493264250 node_paths=PackedStringArray("player_node")]
+script = ExtResource("1_3mqji")
+spawn_ai_scene = ExtResource("9_torvr")
+player_node = NodePath("PlayerMovement/CharacterBody3D")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2099120327]
+environment = SubResource("Environment_rf2cd")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1667873002]
+transform = Transform3D(0.9140417, 1.7730223e-08, -0.40562022, 0.40562022, -3.995403e-08, 0.9140417, 0, -1, -4.371139e-08, 0, 0, 0)
+shadow_enabled = true
+shadow_opacity = 0.86
+
+[node name="BodyImpactParticle" type="Node" parent="." unique_id=452415427]
+script = ExtResource("2_yvb8b")
+particle = ExtResource("3_3hf6u")
+metadata/_custom_type_script = "uid://dublh3wbt5134"
+
+[node name="PlayerMovement" type="PlayerMovement" parent="." unique_id=1885467843]
+script = ExtResource("2_uxrcv")
+
+[node name="Node3D" type="Node3D" parent="PlayerMovement" unique_id=1284162314 node_paths=PackedStringArray("follow_target", "camera_instance")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.656749, 0)
+script = ExtResource("3_rf2cd")
+follow_target = NodePath("../CharacterBody3D")
+camera_distance = 10.0
+max_lag = 5.0
+camera_instance = NodePath("Camera3D")
+camera_downward_angle = 50.0
+
+[node name="Camera3D" type="Camera3D" parent="PlayerMovement/Node3D" unique_id=860166361]
+
+[node name="CharacterBody3D" parent="PlayerMovement" unique_id=1387836369 instance=ExtResource("5_torvr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.724269, 0)
+collision_layer = 2147483648
+
+[node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("particle_component", "bullet_origin_socket", "mouse_input_component", "collision_to_ignore")]
+unique_name_in_owner = true
+script = ExtResource("7_3hf6u")
+particle_component = NodePath("../../../BodyImpactParticle")
+bullet_origin_socket = NodePath("../CharacterBulletOrigin")
+mouse_input_component = NodePath("../MouseInputComponent")
+bullet_interval = 0.2
+collision_to_ignore = [NodePath("..")]
+bullet_particle_scene = ExtResource("9_mctxq")
+metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
+
+[node name="PlayerMovementComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=645840862 node_paths=PackedStringArray("character_body")]
+unique_name_in_owner = true
+script = ExtResource("7_p5x2j")
+character_body = NodePath("..")
+metadata/_custom_type_script = "uid://cdy55rcoenb36"
+
+[node name="MouseInputComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1876481701 node_paths=PackedStringArray("object_to_ignore")]
+unique_name_in_owner = true
+script = ExtResource("8_yvb8b")
+object_to_ignore = [NodePath("..")]
+metadata/_custom_type_script = "uid://bkvj2miasjxyi"
+
+[node name="CharacterBulletOrigin" type="Node3D" parent="PlayerMovement/CharacterBody3D" unique_id=2011840548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35580635, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=978663820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0066814423, 0.042446136, -0.05958748)
+navigation_mesh = SubResource("NavigationMesh_torvr")
+use_edge_connections = false
+
+[node name="Spawner" parent="NavigationRegion3D" unique_id=949474006 instance=ExtResource("6_a814b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.230715, 1.8585148, -22.221779)
+material_override = ExtResource("7_5crlr")
+script = ExtResource("8_hbc2u")
+spawn_count = 50
+
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D" unique_id=216985406]
+collision_layer = 15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D" unique_id=924180002]
+shape = SubResource("BoxShape3D_3mqji")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D" unique_id=803928493]
+mesh = SubResource("BoxMesh_x4av3")
+surface_material_override/0 = ExtResource("2_x4av3")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D" unique_id=141579768]
+transform = Transform3D(0.92350507, 0.38358623, 0, -0.38358623, 0.92350507, 0, 0, 0, 1, 0.15866984, 1.6069763, 0)
+shape = SubResource("BoxShape3D_torvr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D3" unique_id=1324998679]
+material_override = ExtResource("7_5crlr")
+mesh = SubResource("BoxMesh_8xkvn")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D" unique_id=727706233]
+transform = Transform3D(0.99996805, 0.007993534, 0, -0.007993534, 0.99996805, 0, 0, 0, 1, 0, 5.0562763, 9.140156)
+shape = SubResource("BoxShape3D_torvr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D2" unique_id=1241080394]
+material_override = ExtResource("7_5crlr")
+transparency = 0.84
+mesh = SubResource("BoxMesh_8xkvn")
+surface_material_override/0 = SubResource("ORMMaterial3D_8xkvn")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D" unique_id=1163531735]
+transform = Transform3D(1, 0, 0, 0, 0.8929789, 0.45009843, 0, -0.45009843, 0.8929789, -26.71524, 4.064329, -33.048157)
+shape = SubResource("BoxShape3D_4mcbk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D5" unique_id=354796338]
+material_override = ExtResource("7_5crlr")
+mesh = SubResource("BoxMesh_3hf6u")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D" unique_id=1304108367]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.938402, 9.459145, -14.586527)
+shape = SubResource("BoxShape3D_3hf6u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D4" unique_id=1634500568]
+material_override = ExtResource("7_5crlr")
+mesh = SubResource("BoxMesh_3hf6u")
+
+[connection signal="spawn_request" from="NavigationRegion3D/Spawner" to="." method="_spawn_enemy_at"]
