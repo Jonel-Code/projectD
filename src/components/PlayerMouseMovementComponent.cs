@@ -1,5 +1,5 @@
 using Godot;
-using GameSystems;
+using GlobalSystems;
 
 [GlobalClass]
 public partial class PlayerMouseMovementComponent : Node

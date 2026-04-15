@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 DamageSystem="*uid://bsv4vs2oy74l7"
 ImpactSystem="*uid://ds4yd6axx2i3u"
 EnhancedMouseInputSystem="*uid://bi6npnf1hcc21"
+WorldDebugSystem="*uid://dumet4lyqi751"
 
 [dotnet]
 

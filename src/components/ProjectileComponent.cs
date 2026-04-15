@@ -1,5 +1,7 @@
-using Godot;
 using System;
+using GlobalSystems;
+using Godot;
+using WorldUtils;
 
 public struct ProjectileData
 {
@@ -31,7 +33,7 @@ public partial class ProjectileComponent : Node
 
 	protected ProjectileData[] ProjectilePool = [];
 
-	protected uint ProjectileCollisionMask => 1 << 32;
+	protected uint ProjectileCollisionMask => (1 << 5) - 1;
 
 	protected bool DidInputFire => FireActionName.Length > 0 && Input.IsActionPressed(FireActionName);
 
@@ -68,7 +70,7 @@ public partial class ProjectileComponent : Node
 			{
 				if (DidInputFire)
 				{
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward);
+					FireBulletTowards(ProjectileOrigin.GlobalPosition + new Vector3(0f, 0f, -1f));
 					ShotCooldown = Resource.ShotInterval;
 				}
 			}
@@ -114,15 +116,46 @@ public partial class ProjectileComponent : Node
 
 				var currentStart = bullet.StartPosition + (bullet.Direction * bullet.Speed * prevDelta);
 				var currentEnd = bullet.StartPosition + (bullet.Direction * bullet.Speed * curDelta);
+				ProjectilePool[i].CurrentDelta = curDelta;
 
-				var query = PhysicsRayQueryParameters3D.Create(currentStart, currentEnd, ProjectileCollisionMask, RayExclusionList);
-				var result = CurrentWorld.DirectSpaceState.IntersectRay(query);
-				if (result.TryGetValue("position", out Variant outImpactPoint))
+				var direction = (currentEnd - currentStart).Normalized();
+				var height = currentStart.DistanceTo(currentEnd);
+				var capsuleWorldPosition = currentStart + (direction * height * 0.5f);
+				var capsule = new CapsuleShape3D
 				{
-					currentEnd = outImpactPoint.AsVector3();
+					Radius = 0.9f,
+					Height = height
+				};
+				var capsuleTransform = new Transform3D
+				{
+					Origin = capsuleWorldPosition,
+				};
+				capsuleTransform = capsuleTransform.PointYTowards(direction);
+				var shapedQuery = new PhysicsShapeQueryParameters3D
+				{
+					Shape = capsule,
+					Transform = capsuleTransform,
+					CollisionMask = ProjectileCollisionMask,
+					Exclude = RayExclusionList
+				};
+
+				var results = CurrentWorld.DirectSpaceState.IntersectShape(shapedQuery);
+				if (results.Count > 0)
+				{
+					var result = results[0];
 					if (result.TryGetValue("collider", out Variant outCollider))
 					{
-						GD.Print("Collided with: ", outCollider.AsStringName());
+						var collider = outCollider.As<CollisionObject3D>();
+						// Intersect shape does not provide intersection point, 
+						// so we create a new raycast and get the projection of the ray 
+						// towards the current end to identify the actual end point 
+						var rayQuery = PhysicsRayQueryParameters3D.Create(currentStart, collider.GlobalPosition, ProjectileCollisionMask, RayExclusionList);
+						var rayResult = CurrentWorld.DirectSpaceState.IntersectRay(rayQuery);
+						if (rayResult.TryGetValue("position", out Variant outImpact))
+						{
+							var impactEnd = outImpact.AsVector3();
+							currentEnd = currentStart.ProjectPoints(impactEnd, currentEnd);
+						}
 					}
 					ProjectilePool[i].IsActive = false;
 				}
@@ -133,12 +166,10 @@ public partial class ProjectileComponent : Node
 					{
 						ProjectilePool[i].IsActive = false;
 					}
-					else
-					{
-						ProjectilePool[i].CurrentDelta = curDelta;
-					}
 				}
-				EmitSignal(SignalName.ProjectileLineCalculated, currentStart, currentEnd);
+
+				// TODO: replace this with GPU particle/effect
+				this.GetWorldDebugSystem().DebugCapsule(currentStart, currentEnd, capsule.Radius, Colors.Red, 0.1);
 			}
 		}
 	}
