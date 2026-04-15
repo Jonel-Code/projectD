@@ -88,7 +88,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.656749, 0)
 script = ExtResource("3_rf2cd")
 follow_target = NodePath("../CharacterBody3D")
 camera_distance = 10.0
-max_lag = 5.0
+max_lag = 10.0
 camera_instance = NodePath("Camera3D")
 camera_downward_angle = 50.0
 
