@@ -15,19 +15,10 @@ public struct ProjectileData
 public partial class ProjectileComponent : Node
 {
 	[Export]
-	public String FireActionName { get; set; } = "";
+	public ProjectileResource Resource { get; set; }
 
 	[Export]
-	public float Speed { get; set; } = 1000;
-
-	[Export]
-	public float ProjectileReach { get; set; } = 1000;
-
-	[Export]
-	public int AmmoCount { get; set; } = 5;
-
-	[Export]
-	public float FirePerSecond { get; set; } = 5;
+	public string FireActionName { get; set; } = "";
 
 	[Export]
 	public Node3D ProjectileOrigin { get; set; } = null;
@@ -40,13 +31,9 @@ public partial class ProjectileComponent : Node
 
 	protected ProjectileData[] ProjectilePool = [];
 
-	protected int BufferSize => 2;
-
-	protected int ProjectilePoolSize => AmmoCount * BufferSize;
-
-	protected double ShotInterval => 1 / FirePerSecond;
-
 	protected uint ProjectileCollisionMask => 1 << 32;
+
+	protected bool DidInputFire => FireActionName.Length > 0 && Input.IsActionPressed(FireActionName);
 
 	private double ShotCooldown = 0;
 
@@ -54,13 +41,12 @@ public partial class ProjectileComponent : Node
 
 	private Godot.Collections.Array<Rid> RayExclusionList = [];
 
-	protected bool DidInputFire => FireActionName.Length > 0 && Input.IsActionPressed(FireActionName);
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Array.Resize(ref ProjectilePool, ProjectilePoolSize);
-		for (int i = 0; i < ProjectilePoolSize; i++)
+		Array.Resize(ref ProjectilePool, Resource.ProjectilePoolSize);
+		for (int i = 0; i < Resource.ProjectilePoolSize; i++)
 		{
 			ProjectilePool[i] = new ProjectileData();
 		}
@@ -83,11 +69,7 @@ public partial class ProjectileComponent : Node
 				if (DidInputFire)
 				{
 					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward);
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward.Rotated(Vector3.Up, Mathf.DegToRad(10)));
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward.Rotated(Vector3.Up, Mathf.DegToRad(15)));
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward.Rotated(Vector3.Up, Mathf.DegToRad(20)));
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + Vector3.Forward.Rotated(Vector3.Up, Mathf.DegToRad(25)));
-					ShotCooldown = ShotInterval;
+					ShotCooldown = Resource.ShotInterval;
 				}
 			}
 			else
@@ -110,8 +92,8 @@ public partial class ProjectileComponent : Node
 			var start = ProjectileOrigin.GlobalPosition;
 			var direction = (target - ProjectileOrigin.GlobalPosition).Normalized();
 			ProjectilePool[i].StartPosition = start;
-			ProjectilePool[i].TargetEnd = start + (direction * ProjectileReach);
-			ProjectilePool[i].Speed = Speed;
+			ProjectilePool[i].TargetEnd = start + (direction * Resource.ProjectileReach);
+			ProjectilePool[i].Speed = Resource.Speed;
 			ProjectilePool[i].Direction = direction;
 			ProjectilePool[i].IsActive = true;
 			ProjectilePool[i].CurrentDelta = 0;
@@ -124,10 +106,9 @@ public partial class ProjectileComponent : Node
 	{
 		for (int i = 0; i < ProjectilePool.Length; i++)
 		{
-			var bullet = ProjectilePool[i];
-
-			if (bullet.IsActive)
+			if (ProjectilePool[i].IsActive)
 			{
+				var bullet = ProjectilePool[i];
 				float prevDelta = bullet.CurrentDelta;
 				float curDelta = prevDelta + (float)delta;
 
@@ -148,7 +129,7 @@ public partial class ProjectileComponent : Node
 				else
 				{
 					var currentReach = bullet.StartPosition.DistanceTo(currentEnd);
-					if (currentReach >= ProjectileReach)
+					if (currentReach >= Resource.ProjectileReach)
 					{
 						ProjectilePool[i].IsActive = false;
 					}

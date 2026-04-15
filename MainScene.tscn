@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://dnyjj2l4n1dqr" path="res://scenes/nodes/bullet_effect.tscn" id="9_mctxq"]
 [ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
 [ext_resource type="Script" uid="uid://cc2u45y0jp86i" path="res://src/components/ProjectileComponent.cs" id="12_nm5af"]
+[ext_resource type="Script" uid="uid://bjma0vgmo0p4c" path="res://src/components/ProjectileResource.cs" id="13_x0cd2"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_uxrcv"]
 
@@ -27,6 +28,10 @@ background_mode = 2
 sky = SubResource("Sky_uxrcv")
 reflected_light_source = 2
 volumetric_fog_density = 0.01
+
+[sub_resource type="Resource" id="Resource_8s4c3"]
+script = ExtResource("13_x0cd2")
+metadata/_custom_type_script = "uid://bjma0vgmo0p4c"
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_torvr"]
 vertices = PackedVector3Array(-499.5, 0.8668556, -499.5, -499.5, 0.8668556, -41, -42.25, 0.8668556, -41, -41.25, 1.1168556, -41, -12, 1.1168556, -41, -11, 0.8668556, -41, 499.5, 0.8668556, -41, 499.5, 0.8668556, -499.5, -499.5, 0.8668556, -35.25, -42, 0.8668556, -35.25, -41.25, 9.366856, -24.75, -40.5, 9.366856, -24.75, -40.25, 9.116856, -25.25, -12, 9.116856, -25.25, 499.5, 0.8668556, -35.25, -11.25, 0.8668556, -35.25, -499.5, 0.8668556, -23.25, 10.5, 0.8668556, -23.25, 12, 0.8668556, -23.25, 499.5, 0.8668556, -23.25, -39.5, 10.366856, -24.25, -39.5, 10.366856, -5, -10.25, 10.366856, -5, -10.25, 10.366856, -24.25, -499.5, 0.8668556, -21, 10.75, 0.8668556, -21, 10, 0.8668556, -21.75, 12.25, 0.8668556, -21.5, 11.75, 0.8668556, -21, 499.5, 0.8668556, -21, 499.5, 0.8668556, -3, 3.5, 0.8668556, -3, -2.75, 0.8668556, -3, -499.5, 0.8668556, -3, -499.5, 0.8668556, 3.25, -2.75, 0.8668556, 3.25, 3.5, 1.1168556, -2, -4, 4.3668556, -2, -4, 4.3668556, 2, 3.5, 1.1168556, 2.25, 499.5, 0.8668556, 3.25, 3.5, 0.8668556, 3.25, 499.5, 0.8668556, 499.5, -499.5, 0.8668556, 499.5, -4.5, 5.8668556, 7, -4.5, 5.8668556, 11.25, 4.75, 5.8668556, 11.25, 4.75, 5.8668556, 7)
@@ -121,9 +126,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35580635, 0)
 
 [node name="ProjectileComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=637285491 node_paths=PackedStringArray("ProjectileOrigin", "OwnerCollision")]
 script = ExtResource("12_nm5af")
+Resource = SubResource("Resource_8s4c3")
 FireActionName = "fire_bullet"
-AmmoCount = 20
-FirePerSecond = 1.0
 ProjectileOrigin = NodePath("../CharacterBulletOrigin")
 OwnerCollision = NodePath("..")
 metadata/_custom_type_script = "uid://cc2u45y0jp86i"
