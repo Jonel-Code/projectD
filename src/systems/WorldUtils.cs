@@ -22,6 +22,5 @@ public static class WorldUtilsExtension
         var dirA = a - origin;
         var scalar = dirA.Dot(dirB) / dirB.Dot(dirB);
         return origin + (scalar * dirB);
-
     }
 }

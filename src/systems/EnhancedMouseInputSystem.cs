@@ -36,5 +36,16 @@ public partial class EnhancedMouseInputSystem : Node
 		}
 		return false;
 	}
+
+	/// adjust point so that the Y value of the point will be equal to given Y while respecting the camera view
+	public Vector3 LerpPointTowardsY(Vector3 point, double y)
+	{
+		var camera = GetViewport().GetCamera3D();
+		var end = camera.GlobalPosition;
+		var t = (y - point.Y) / (end.Y - point.Y);
+		var x = point.X + ((end.X - point.X) * t);
+		var z = point.Z + ((end.Z - point.Z) * t);
+		return new Vector3((float)x, (float)y, (float)z);
+	}
 }
 

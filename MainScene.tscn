@@ -8,12 +8,10 @@
 [ext_resource type="Script" uid="uid://bdkbbs27gwt1s" path="res://camera_3d.gd" id="3_rf2cd"]
 [ext_resource type="PackedScene" uid="uid://cykr7r1jyak3s" path="res://content/character/playable_character.tscn" id="5_torvr"]
 [ext_resource type="PackedScene" uid="uid://dxvxy65pv5hoe" path="res://addons/prototype_mini_bundle/prop_sphere.tscn" id="6_a814b"]
-[ext_resource type="Script" uid="uid://cp5u65bk8tsvu" path="res://systems/components/fire_bullet_component.gd" id="7_3hf6u"]
 [ext_resource type="Material" uid="uid://1nvrnylcajfg" path="res://addons/prototype_mini_bundle/M_prototype_red.tres" id="7_5crlr"]
 [ext_resource type="Script" uid="uid://cdy55rcoenb36" path="res://systems/components/player_movement_component.gd" id="7_p5x2j"]
 [ext_resource type="Script" uid="uid://dsn3cmpc66ykh" path="res://spawner.gd" id="8_hbc2u"]
 [ext_resource type="Script" uid="uid://bkvj2miasjxyi" path="res://systems/components/mouse_input_component.gd" id="8_yvb8b"]
-[ext_resource type="PackedScene" uid="uid://dnyjj2l4n1dqr" path="res://scenes/nodes/bullet_effect.tscn" id="9_mctxq"]
 [ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
 [ext_resource type="Script" uid="uid://cc2u45y0jp86i" path="res://src/components/ProjectileComponent.cs" id="12_nm5af"]
 [ext_resource type="Script" uid="uid://bjma0vgmo0p4c" path="res://src/components/ProjectileResource.cs" id="13_x0cd2"]
@@ -98,17 +96,6 @@ camera_downward_angle = 50.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.724269, 0)
 collision_layer = 2147483648
 
-[node name="FireBulletComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=1594200260 node_paths=PackedStringArray("particle_component", "bullet_origin_socket", "mouse_input_component", "collision_to_ignore")]
-unique_name_in_owner = true
-script = ExtResource("7_3hf6u")
-particle_component = NodePath("../../../BodyImpactParticle")
-bullet_origin_socket = NodePath("../CharacterBulletOrigin")
-mouse_input_component = NodePath("../MouseInputComponent")
-bullet_interval = 0.2
-collision_to_ignore = [NodePath("..")]
-bullet_particle_scene = ExtResource("9_mctxq")
-metadata/_custom_type_script = "uid://cp5u65bk8tsvu"
-
 [node name="PlayerMovementComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=645840862 node_paths=PackedStringArray("character_body")]
 unique_name_in_owner = true
 script = ExtResource("7_p5x2j")
@@ -128,6 +115,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35580635, 0)
 script = ExtResource("12_nm5af")
 Resource = SubResource("Resource_8s4c3")
 FireActionName = "fire_bullet"
+BulletRadius = 0.2
 ProjectileOrigin = NodePath("../CharacterBulletOrigin")
 OwnerCollision = NodePath("..")
 metadata/_custom_type_script = "uid://cc2u45y0jp86i"

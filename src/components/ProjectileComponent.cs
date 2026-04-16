@@ -23,6 +23,9 @@ public partial class ProjectileComponent : Node
 	public string FireActionName { get; set; } = "";
 
 	[Export]
+	public float BulletRadius { get; set; } = 0.5f;
+
+	[Export]
 	public Node3D ProjectileOrigin { get; set; } = null;
 
 	[Export]
@@ -70,15 +73,18 @@ public partial class ProjectileComponent : Node
 			{
 				if (DidInputFire)
 				{
-					FireBulletTowards(ProjectileOrigin.GlobalPosition + new Vector3(0f, 0f, -1f));
-					ShotCooldown = Resource.ShotInterval;
+					if (this.GetMouseSystem().GetMouseWorldPosition(out var hitPosition, out var rid))
+					{
+						var leveledPoint = this.GetMouseSystem().LerpPointTowardsY(hitPosition, ProjectileOrigin.GlobalPosition.Y);
+						FireBulletTowards(leveledPoint);
+						ShotCooldown = Resource.ShotInterval;
+					}
 				}
 			}
 			else
 			{
 				ShotCooldown -= delta;
 			}
-
 			ProcessBullet(delta);
 		}
 	}
@@ -123,7 +129,7 @@ public partial class ProjectileComponent : Node
 				var capsuleWorldPosition = currentStart + (direction * height * 0.5f);
 				var capsule = new CapsuleShape3D
 				{
-					Radius = 0.9f,
+					Radius = BulletRadius,
 					Height = height
 				};
 				var capsuleTransform = new Transform3D
