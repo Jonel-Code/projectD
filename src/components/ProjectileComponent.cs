@@ -36,7 +36,7 @@ public partial class ProjectileComponent : Node
 
 	protected ProjectileData[] ProjectilePool = [];
 
-	protected uint ProjectileCollisionMask => (1 << 5) - 1;
+	protected uint ProjectileCollisionMask => (1 << 30) - 1;
 
 	protected bool DidInputFire => FireActionName.Length > 0 && Input.IsActionPressed(FireActionName);
 
@@ -75,8 +75,17 @@ public partial class ProjectileComponent : Node
 				{
 					if (this.GetMouseSystem().GetMouseWorldPosition(out var hitPosition, out var rid))
 					{
-						var leveledPoint = this.GetMouseSystem().LerpPointTowardsY(hitPosition, ProjectileOrigin.GlobalPosition.Y);
-						FireBulletTowards(leveledPoint);
+						uint layer = 0;
+						var maskLayer = 1 << 31;
+						if (rid != null && rid != OwnerCollision.GetRid())
+						{
+							layer = PhysicsServer3D.BodyGetCollisionLayer((Rid)rid);
+						}
+						if ((layer & maskLayer) == 0)
+						{
+							hitPosition = this.GetMouseSystem().LerpPointTowardsY(hitPosition, ProjectileOrigin.GlobalPosition.Y);
+						}
+						FireBulletTowards(hitPosition);
 						ShotCooldown = Resource.ShotInterval;
 					}
 				}
@@ -149,6 +158,7 @@ public partial class ProjectileComponent : Node
 				if (results.Count > 0)
 				{
 					var result = results[0];
+					GD.Print("result: ", result);
 					if (result.TryGetValue("collider", out Variant outCollider))
 					{
 						var collider = outCollider.As<CollisionObject3D>();
