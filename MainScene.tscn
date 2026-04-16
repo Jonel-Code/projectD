@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://bkvj2miasjxyi" path="res://systems/components/mouse_input_component.gd" id="8_yvb8b"]
 [ext_resource type="PackedScene" uid="uid://b7teeuglk8nbw" path="res://ai_enemy.tscn" id="9_torvr"]
 [ext_resource type="Script" uid="uid://cc2u45y0jp86i" path="res://src/components/ProjectileComponent.cs" id="12_nm5af"]
+[ext_resource type="Script" uid="uid://dfw0xomddf4kn" path="res://src/components/ProjectileLaunchComponent.cs" id="12_x0cd2"]
 [ext_resource type="Script" uid="uid://bjma0vgmo0p4c" path="res://src/components/ProjectileResource.cs" id="13_x0cd2"]
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_uxrcv"]
@@ -119,6 +120,11 @@ BulletRadius = 0.2
 ProjectileOrigin = NodePath("../CharacterBulletOrigin")
 OwnerCollision = NodePath("..")
 metadata/_custom_type_script = "uid://cc2u45y0jp86i"
+
+[node name="ProjectileLaunchComponent" type="Node" parent="PlayerMovement/CharacterBody3D" unique_id=548901278 node_paths=PackedStringArray("ProjectileOrigin")]
+script = ExtResource("12_x0cd2")
+ProjectileOrigin = NodePath("../CharacterBulletOrigin")
+metadata/_custom_type_script = "uid://dfw0xomddf4kn"
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=978663820]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0066814423, 0.042446136, -0.05958748)

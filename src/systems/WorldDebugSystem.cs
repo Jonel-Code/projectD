@@ -92,4 +92,19 @@ public partial class WorldDebugSystem : Node
 		capsuleTransform = capsuleTransform.PointYTowards(direction);
 		DebugCapsule(capsuleTransform, radius, height, color, lifetime);
 	}
+
+	public void DebugSphere(Vector3 Position, float radius, Color color, double lifetime = 0.01)
+	{
+		var meshInstance = new MeshInstance3D();
+		var sphereMesh = new SphereMesh();
+		var material = new OrmMaterial3D();
+		meshInstance.Mesh = sphereMesh;
+		meshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+		material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
+		material.AlbedoColor = color;
+		sphereMesh.Radius = radius;
+		GetTree().Root.AddChild(meshInstance);
+		meshInstance.GlobalPosition = Position;
+		DebugNodes.Add(new WorldDebugData { Node = meshInstance, Lifetime = lifetime });
+	}
 }
