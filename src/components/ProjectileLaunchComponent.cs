@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using GlobalSystems;
@@ -22,6 +21,8 @@ partial class ProjectileLaunchComponent : Node
     public Node3D ProjectileOrigin { get; set; } = null;
 
     protected List<ProjectileLaunchData> Projectiles = new();
+
+    protected Queue<int> ProjectileToRemove = new();
 
     protected uint AimingMask => 1 << 1;
 
@@ -53,7 +54,7 @@ partial class ProjectileLaunchComponent : Node
                     var displacementLength = hitPosition.DistanceTo(origin);
                     var effectiveDistance = 10;
                     /// the further the travel the slower and near it is to 1, the shorted the faster
-                    var speed = (displacementLength + effectiveDistance) / displacementLength;
+                    var speed = (3 * displacementLength + effectiveDistance) / displacementLength;
                     Projectiles.Add(new ProjectileLaunchData
                     {
                         StartPosition = origin,
@@ -77,9 +78,24 @@ partial class ProjectileLaunchComponent : Node
                 span[i].AccumulatedDelta += delta * span[i].Speed;
                 var accu = span[i].AccumulatedDelta;
                 var position = span[i].StartPosition.Lerp(span[i].Endposition, (float)span[i].AccumulatedDelta);
-                float parabolicRadius = 1;
-                position.Y += (float)Mathf.Sin(accu * Mathf.Pi) * parabolicRadius;
-                this.GetWorldDebugSystem().DebugSphere(position, .5f, Colors.Red, 0.1);
+                float parabolicRadius = 15 / (float)span[i].Speed;
+                float parabolicDelta = (float)Mathf.Sin(accu * Mathf.Pi) * parabolicRadius;
+                position.Y += parabolicDelta;
+                this.GetWorldDebugSystem().DebugSphere(position, .5f, Colors.Red, delta);
+                if (accu >= 1 || accu < 0)
+                {
+                    ProjectileToRemove.Enqueue(i);
+                    span[i].Speed = 0;
+                }
+            }
+        }
+
+        while (ProjectileToRemove.Count > 0)
+        {
+            var index = ProjectileToRemove.Dequeue();
+            if (Projectiles.Count > index)
+            {
+                Projectiles.RemoveAt(index);
             }
         }
     }
