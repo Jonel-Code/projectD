@@ -75,18 +75,20 @@ partial class ProjectileLaunchComponent : Node
                 {
                     continue;
                 }
+                if (span[i].AccumulatedDelta >= 1 || span[i].AccumulatedDelta < 0)
+                {
+                    ProjectileToRemove.Enqueue(i);
+                    span[i].Speed = 0;
+                    continue;
+                }
                 span[i].AccumulatedDelta += delta * span[i].Speed;
                 var accu = span[i].AccumulatedDelta;
+                // TODO: move this movement to be more customizable
                 var position = span[i].StartPosition.Lerp(span[i].Endposition, (float)span[i].AccumulatedDelta);
                 float parabolicRadius = 15 / (float)span[i].Speed;
                 float parabolicDelta = (float)Mathf.Sin(accu * Mathf.Pi) * parabolicRadius;
                 position.Y += parabolicDelta;
                 this.GetWorldDebugSystem().DebugSphere(position, .5f, Colors.Red, delta);
-                if (accu >= 1 || accu < 0)
-                {
-                    ProjectileToRemove.Enqueue(i);
-                    span[i].Speed = 0;
-                }
             }
         }
 
