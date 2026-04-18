@@ -13,8 +13,8 @@ public partial class WorldDebugSystem : Node
 {
 	public static WorldDebugSystem Instance { get; private set; }
 
-
 	protected List<WorldDebugData> DebugNodes = new List<WorldDebugData>();
+
 
 	public override void _Ready()
 	{
@@ -103,6 +103,7 @@ public partial class WorldDebugSystem : Node
 		material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
 		material.AlbedoColor = color;
 		sphereMesh.Radius = radius;
+		sphereMesh.Height = radius * 2;
 		GetTree().Root.AddChild(meshInstance);
 		meshInstance.GlobalPosition = Position;
 		DebugNodes.Add(new WorldDebugData { Node = meshInstance, Lifetime = lifetime });

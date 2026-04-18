@@ -23,7 +23,7 @@ billboard_mode = 1
 billboard_keep_scale = true
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1209109561 node_paths=PackedStringArray("nav_3d")]
-collision_layer = 2147484160
+collision_layer = 4026532352
 script = ExtResource("1_g3imv")
 nav_3d = NodePath("NavigationAgent3D")
 

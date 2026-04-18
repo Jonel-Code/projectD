@@ -22,13 +22,19 @@ partial class ProjectileLaunchComponent : Node
 
     protected List<ProjectileLaunchData> Projectiles = new();
 
+    protected Dictionary<int, List<Rid>> ProjectileHits = new();
+
     protected Queue<int> ProjectileToRemove = new();
 
     protected uint AimingMask => 1 << 1;
+    protected uint HitMask => 1 << 30;
+
+    protected World3D CurrentWorld;
 
     public override void _Ready()
     {
         Projectiles.Capacity = 100;
+        CurrentWorld = GetViewport().FindWorld3D();
         // GD.Print("gravity: ", Gravity);
         // ProjectileContainer.Reserve(100);
         // ProjectileContainer.UpdateContentDelagate += OnProjectileUpdate;
@@ -88,7 +94,61 @@ partial class ProjectileLaunchComponent : Node
                 float parabolicRadius = 15 / (float)span[i].Speed;
                 float parabolicDelta = (float)Mathf.Sin(accu * Mathf.Pi) * parabolicRadius;
                 position.Y += parabolicDelta;
-                this.GetWorldDebugSystem().DebugSphere(position, .5f, Colors.Red, delta);
+                var projectileRadius = 2f;
+                this.GetWorldDebugSystem().DebugSphere(position, projectileRadius, Colors.Red, delta);
+
+                if (CurrentWorld != null)
+                {
+                    var shape = new SphereShape3D
+                    {
+                        Radius = projectileRadius
+                    };
+                    var transform = new Transform3D
+                    {
+                        Origin = position,
+                        Basis = Basis.LookingAt(Vector3.Forward)
+                    };
+                    var shapeQuery = new PhysicsShapeQueryParameters3D
+                    {
+                        Shape = shape,
+                        Transform = transform,
+                        CollisionMask = HitMask
+                    };
+                    var hitResult = CurrentWorld.DirectSpaceState.IntersectShape(shapeQuery);
+                    if (hitResult.Count > 0)
+                    {
+                        // ProjectileToRemove.Enqueue(i);
+                        // span[i].Speed = 0;
+                        if (!ProjectileHits.ContainsKey(i))
+                        {
+                            var list = new List<Rid>
+                            {
+                                Capacity = 10
+                            };
+                            ProjectileHits.Add(i, list);
+                        }
+                        foreach (var item in hitResult)
+                        {
+                            if (item.TryGetValue("collider", out Variant outCollider))
+                            {
+                                var collider = outCollider.As<CharacterBody3D>();
+
+                                if (collider != null)
+                                {
+                                    if (ProjectileHits[i].Contains(collider.GetRid()))
+                                    {
+                                        continue;
+                                    }
+                                    // TODO: move this impact somewhere more easy to control
+                                    var impactDirection = (collider.GlobalPosition - position).Normalized() with { Y = 0 };
+                                    collider.Velocity += impactDirection * 25;
+                                    collider.MoveAndSlide();
+                                    ProjectileHits[i].Add(collider.GetRid());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -98,6 +158,11 @@ partial class ProjectileLaunchComponent : Node
             if (Projectiles.Count > index)
             {
                 Projectiles.RemoveAt(index);
+                if (ProjectileHits.ContainsKey(index))
+                {
+                    ProjectileHits[index].Clear();
+                    ProjectileHits[index].Capacity = 10;
+                }
             }
         }
     }
