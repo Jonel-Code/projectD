@@ -5,7 +5,6 @@
 [ext_resource type="Material" uid="uid://brj2jayoo0l0d" path="res://addons/prototype_mini_bundle/M_prototype_blue.tres" id="2_a4prh"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_a4prh"]
-friction = 0.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6ei8a"]
 

@@ -1,3 +1,4 @@
+using GlobalSystems;
 using Godot;
 using System;
 
@@ -72,6 +73,11 @@ public partial class PlayerCharacter : RigidBody3D
 		Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 		if (direction != Vector3.Zero)
 		{
+			var additionalDirection = GetMovementPlaneHit(direction * (float)delta * Speed);
+			if (additionalDirection != Vector3.Zero)
+			{
+				direction = direction.Slide(additionalDirection);
+			}
 			Velocity = Velocity with
 			{
 				X = direction.X * Speed,
@@ -107,6 +113,17 @@ public partial class PlayerCharacter : RigidBody3D
 	{
 		var displacement = GlobalPosition + Velocity;
 		GlobalPosition = GlobalPosition.Lerp(displacement, (float)delta);
+	}
+
+	protected Vector3 GetMovementPlaneHit(Vector3 movementDirection)
+	{
+		var movementCollision = MoveAndCollide(movementDirection with { Y = 0 }, true, safeMargin: 0.005f);
+		if (movementCollision != null)
+		{
+			var hitNormal = movementCollision.GetNormal() with { Y = 0 };
+			return hitNormal;
+		}
+		return Vector3.Zero;
 	}
 
 	public void OnCollisionStart(Rid bodyRid, Node body, long shapeIndex, long localShapeIndex)
