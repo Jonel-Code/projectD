@@ -5,4 +5,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>ProjectD</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+      <PackageReference Include="Arch" Version="2.1.0-beta" />
+  </ItemGroup>
 </Project>

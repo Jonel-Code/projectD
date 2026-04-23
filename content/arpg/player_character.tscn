@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://c1qt07t56flph"]
+
+[ext_resource type="Script" uid="uid://01usvhwlgi4q" path="res://content/arpg/PlayerCharacter.cs" id="1_a4prh"]
+[ext_resource type="Material" uid="uid://dyx4l6ea0am6f" path="res://addons/prototype_mini_bundle/M_prototype_green.tres" id="2_6ei8a"]
+[ext_resource type="Material" uid="uid://brj2jayoo0l0d" path="res://addons/prototype_mini_bundle/M_prototype_blue.tres" id="2_a4prh"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_a4prh"]
+friction = 0.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6ei8a"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_a4prh"]
+radius = 0.3
+height = 0.5
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_0g2mo"]
+radius = 0.4
+height = 1.5
+
+[node name="PlayerCharacter" type="RigidBody3D" unique_id=1684593005]
+physics_material_override = SubResource("PhysicsMaterial_a4prh")
+lock_rotation = true
+contact_monitor = true
+max_contacts_reported = 1
+script = ExtResource("1_a4prh")
+
+[node name="CameraRoot" type="Node3D" parent="." unique_id=676875908]
+transform = Transform3D(1, 0, 0, 0, 0.8901015, 0.45576242, 0, -0.45576242, 0.8901015, 0, 0.6219413, 0)
+
+[node name="CameraBoom" type="SpringArm3D" parent="CameraRoot" unique_id=471557258]
+collision_mask = 2
+spring_length = 5.0
+
+[node name="MainCamera" type="Camera3D" parent="CameraRoot/CameraBoom" unique_id=1409102846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+current = true
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1601213146]
+shape = SubResource("CapsuleShape3D_6ei8a")
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Collider" unique_id=96550541]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7381321, 0)
+material_override = ExtResource("2_6ei8a")
+mesh = SubResource("SphereMesh_a4prh")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Collider" unique_id=983810599]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2520911, 0)
+material_override = ExtResource("2_a4prh")
+mesh = SubResource("CapsuleMesh_0g2mo")
+
+[connection signal="body_shape_entered" from="." to="." method="OhColisionStart"]

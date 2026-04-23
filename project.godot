@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Project D"
-run/main_scene="uid://bgp158j5tnqyq"
+run/main_scene="uid://clpynhvh33lw7"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -21,10 +21,15 @@ DamageSystem="*uid://bsv4vs2oy74l7"
 ImpactSystem="*uid://ds4yd6axx2i3u"
 EnhancedMouseInputSystem="*uid://bi6npnf1hcc21"
 WorldDebugSystem="*uid://dumet4lyqi751"
+EnhancedDamageSystem="*uid://c0yhucg7cfhu8"
 
 [dotnet]
 
 project/assembly_name="Project D"
+
+[global_group]
+
+Floor=""
 
 [input]
 
