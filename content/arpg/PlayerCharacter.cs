@@ -1,22 +1,13 @@
-using GlobalSystems;
 using Godot;
-using System;
 
-public partial class PlayerCharacter : RigidBody3D
+public partial class PlayerCharacter : CharacterBody3D
 {
-
-	[Export]
-	public string FloorGroupName { get; set; } = "Floor";
-
-	public float FloorAngleJump = Mathf.Cos(Mathf.DegToRad(75.0f));
+	public const float Gravity = 9.81f;
 	public const float JumpHeight = 5.0f; // units
 	public Vector3 JumpVelocity = Mathf.Sqrt(JumpHeight * 9.81f) * Vector3.Up;
 
-	public const float Speed = 10.0f;
-
+	public const float Speed = 5.0f;
 	protected float floatingSince = 0.0f;
-	protected Vector3 Velocity = Vector3.Zero;
-	protected bool IsOnFloor { get; set; } = false;
 	protected bool AllowJump { get; set; } = false;
 
 
@@ -24,8 +15,6 @@ public partial class PlayerCharacter : RigidBody3D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		BodyShapeEntered += OnCollisionStart;
-		BodyShapeExited += OnCollisionExit;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -34,23 +23,25 @@ public partial class PlayerCharacter : RigidBody3D
 	}
 
 
-	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
-	{
-		var velocity = state.LinearVelocity;
-
-		velocity = velocity with
-		{
-			X = Velocity.X,
-			Z = Velocity.Z
-		};
-
-		state.LinearVelocity = velocity;
-	}
-
-
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!IsOnFloor)
+		ProcessGravity(delta);
+		ProcessAirTime(delta);
+		ProcessInputAction(delta);
+		MoveAndSlide();
+	}
+
+	private void ProcessGravity(double delta)
+	{
+		if (!IsOnFloor())
+		{
+			Velocity += Gravity * Vector3.Down * (float)delta;
+		}
+	}
+
+	private void ProcessAirTime(double delta)
+	{
+		if (!IsOnFloor())
 		{
 			floatingSince += (float)delta;
 			if (floatingSince >= 0.5f && AllowJump == true)
@@ -61,9 +52,12 @@ public partial class PlayerCharacter : RigidBody3D
 		else
 		{
 			floatingSince = 0.0f;
+			AllowJump = true;
 		}
+	}
 
-		// Handle Jump.
+	protected void ProcessInputAction(double delta)
+	{
 		if (Input.IsActionJustPressed("ui_accept") && AllowJump == true)
 		{
 			Jump();
@@ -73,15 +67,11 @@ public partial class PlayerCharacter : RigidBody3D
 		Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 		if (direction != Vector3.Zero)
 		{
-			var additionalDirection = GetMovementPlaneHit(direction * (float)delta * Speed);
-			if (additionalDirection != Vector3.Zero)
-			{
-				direction = direction.Slide(additionalDirection);
-			}
+			var newVelocity = direction * Speed;
 			Velocity = Velocity with
 			{
-				X = direction.X * Speed,
-				Z = direction.Z * Speed
+				X = newVelocity.X,
+				Z = newVelocity.Z,
 			};
 		}
 		else
@@ -89,64 +79,16 @@ public partial class PlayerCharacter : RigidBody3D
 			Velocity = Velocity with
 			{
 				X = Mathf.MoveToward(Velocity.X, 0, Speed),
-				Z = Mathf.MoveToward(Velocity.Z, 0, Speed)
+				Z = Mathf.MoveToward(Velocity.Z, 0, Speed),
 			};
 		}
-
-		// ConsumeVelocity(delta);
 	}
 
 	private void Jump()
 	{
-		// means he did air jump
-		if (floatingSince != 0.0f)
+		Velocity = Velocity with
 		{
-			AllowJump = false;
-			// resets the linear velocity because we don't want jump impulse to be accumulative, 
-			// rather we want it to be more consistent regardless the air jump timings
-			LinearVelocity = LinearVelocity with { Y = 0 };
-		}
-		ApplyImpulse(JumpVelocity);
-	}
-
-	protected void ConsumeVelocity(double delta)
-	{
-		var displacement = GlobalPosition + Velocity;
-		GlobalPosition = GlobalPosition.Lerp(displacement, (float)delta);
-	}
-
-	protected Vector3 GetMovementPlaneHit(Vector3 movementDirection)
-	{
-		var movementCollision = MoveAndCollide(movementDirection with { Y = 0 }, true, safeMargin: 0.005f);
-		if (movementCollision != null)
-		{
-			var hitNormal = movementCollision.GetNormal() with { Y = 0 };
-			return hitNormal;
-		}
-		return Vector3.Zero;
-	}
-
-	public void OnCollisionStart(Rid bodyRid, Node body, long shapeIndex, long localShapeIndex)
-	{
-		var collision = MoveAndCollide(Vector3.Down, true);
-		if (collision != null)
-		{
-			if (collision.GetNormal().Y > FloorAngleJump)
-			{
-				IsOnFloor = true;
-				AllowJump = true;
-			}
-		}
-
-		if (body.IsInGroup(FloorGroupName))
-		{
-			IsOnFloor = true;
-			AllowJump = true;
-		}
-	}
-
-	public void OnCollisionExit(Rid bodyRid, Node body, long shapeIndex, long localShapeIndex)
-	{
-		IsOnFloor = false;
+			Y = JumpVelocity.Y,
+		};
 	}
 }

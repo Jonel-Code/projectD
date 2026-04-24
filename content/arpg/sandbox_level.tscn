@@ -40,10 +40,10 @@ bottom_radius = 0.2
 height = 20.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j41pa"]
-size = Vector3(1, 4, 1)
+size = Vector3(5, 4, 5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_2bvj4"]
-size = Vector3(1, 4, 1)
+size = Vector3(5, 4, 5)
 
 [node name="SandboxLevel" type="Node3D" unique_id=1782962830]
 
@@ -66,7 +66,7 @@ transform = Transform3D(1, 0, 0, 0, -0.7103329, 0.7038659, 0, -0.7038659, -0.710
 shadow_enabled = true
 
 [node name="PlayerCharacter" parent="." unique_id=516359981 instance=ExtResource("6_uhur4")]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 4.382878, 0.99070024, 2.0790331)
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -7.606, 100, -0.113)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=360982623]
 
@@ -79,7 +79,7 @@ material_override = ExtResource("3_h3rih")
 mesh = SubResource("SphereMesh_h3rih")
 
 [node name="Wall" type="CollisionShape3D" parent="StaticBody3D" unique_id=1172416150]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.401164, -18)
+transform = Transform3D(-0.119928956, 0.86056215, -0.49502507, 0, 0.4986239, 0.8668184, 0.9927825, 0.10395663, -0.059799444, 0, 4.401164, -18)
 shape = SubResource("BoxShape3D_h3rih")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/Wall" unique_id=598309008]
