@@ -14,11 +14,16 @@ height = 0.5
 radius = 0.4
 height = 1.5
 
-[node name="PlayerCharacter" type="CharacterBody3D" unique_id=216675347]
+[sub_resource type="BoxMesh" id="BoxMesh_a4prh"]
+size = Vector3(0.2, 0.2, 0.2)
+
+[node name="PlayerCharacter" type="CharacterBody3D" unique_id=216675347 node_paths=PackedStringArray("CameraRoot", "PlayerBodyRoot")]
 script = ExtResource("1_a4prh")
+CameraRoot = NodePath("CameraRoot")
+PlayerBodyRoot = NodePath("Collider")
 
 [node name="CameraRoot" type="Node3D" parent="." unique_id=676875908]
-transform = Transform3D(1, 0, 0, 0, 0.8901015, 0.45576242, 0, -0.45576242, 0.8901015, 0, 0.6219413, 0)
+transform = Transform3D(1, 0, 0, 0, 0.8901015, 0.45576242, 0, -0.45576242, 0.8901015, 0, 0.6839129, 0)
 
 [node name="CameraBoom" type="SpringArm3D" parent="CameraRoot" unique_id=471557258]
 collision_mask = 2
@@ -40,3 +45,7 @@ mesh = SubResource("SphereMesh_a4prh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2520911, 0)
 material_override = ExtResource("2_a4prh")
 mesh = SubResource("CapsuleMesh_0g2mo")
+
+[node name="Box" type="MeshInstance3D" parent="Collider" unique_id=1975318944]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+mesh = SubResource("BoxMesh_a4prh")
