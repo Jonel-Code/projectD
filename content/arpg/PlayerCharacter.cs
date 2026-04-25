@@ -16,6 +16,12 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public AnimationPlayer AnimationPlayer { get; set; } = null;
 
+	[Export]
+	public AnimationTree AnimationTree { get; set; } = null;
+
+	[Export]
+	public Node3D AnimationRoot { get; set; } = null;
+
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
 
@@ -65,6 +71,11 @@ public partial class PlayerCharacter : CharacterBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		// if (AnimationRoot != null && AnimationTree != null)
+		// {
+		// 	var rootPos = AnimationTree.GetRootMotionPosition() with { Z = 0, X = 0 };
+		// 	AnimationRoot.Transform = new Transform3D(PlayerBodyRoot.Transform.Basis, rootPos);
+		// }
 	}
 
 
@@ -184,6 +195,9 @@ public partial class PlayerCharacter : CharacterBody3D
 			if (PlayerBodyRoot != null)
 			{
 				var movementQuat = new Quaternion(GlobalTransform.Basis.Z, -direction);
+				var current = PlayerBodyRoot.Basis.GetRotationQuaternion();
+				const float rotationSpeed = 20f;
+				movementQuat = current.Slerp(movementQuat, (float)delta * rotationSpeed);
 				PlayerBodyRoot.Basis = new Basis(movementQuat);
 			}
 		}
