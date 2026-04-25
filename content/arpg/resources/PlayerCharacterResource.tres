@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CharacterResource" format=3]
+
+[ext_resource type="Script" path="res://content/arpg/resources/CharacterResource.cs" id="1_eh8ql"]
+
+[resource]
+script = ExtResource("1_eh8ql")
+Name = "Player"
+MaxHealth = 100
+MaxMana = 50
+Strength = 1
+Agility = 1
+Intelligence = 1

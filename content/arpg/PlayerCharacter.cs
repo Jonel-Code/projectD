@@ -10,6 +10,12 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public Node3D PlayerBodyRoot { get; set; } = null;
 
+	[Export]
+	public CharacterResource Resource { get; set; } = null;
+
+	[Export]
+	public AnimationPlayer AnimationPlayer { get; set; } = null;
+
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
 
@@ -22,14 +28,38 @@ public partial class PlayerCharacter : CharacterBody3D
 	public int CurrentJumpCount = 0;
 	protected bool AllowJump { get; set; } = false;
 
-	public const float Speed = 4.0f;
+	public const float BaseSpeed = 3f;
+	public float Speed
+	{
+		get
+		{
+			if (Resource != null)
+			{
+				return BaseSpeed + (Resource.Agility >> 1);
+			}
+			return BaseSpeed;
+		}
+	}
 	protected Input.MouseModeEnum MouseMode = Input.MouseModeEnum.Captured;
 
+	public string ResourcePath = "res://content/arpg/resources/PlayerCharacterResource.tres";
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		Input.MouseMode = MouseMode;
+
+		Resource = ResourceLoader.Load<CharacterResource>(ResourcePath);
+		Resource ??= new CharacterResource
+		{
+			Name = "Player",
+			MaxHealth = 100,
+			MaxMana = 50,
+			Strength = 1,
+			Agility = 1,
+			Intelligence = 1,
+		};
+		ResourceSaver.Save(Resource, ResourcePath);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -127,7 +157,6 @@ public partial class PlayerCharacter : CharacterBody3D
 		}
 
 	}
-
 
 	protected void ProcessInputAction(double delta)
 	{
