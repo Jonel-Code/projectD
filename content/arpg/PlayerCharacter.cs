@@ -22,6 +22,9 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public Node3D AnimationRoot { get; set; } = null;
 
+	[Export]
+	public bool exp_is_running { get; set; } = false;
+
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
 
@@ -71,11 +74,14 @@ public partial class PlayerCharacter : CharacterBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		// if (AnimationRoot != null && AnimationTree != null)
-		// {
-		// 	var rootPos = AnimationTree.GetRootMotionPosition() with { Z = 0, X = 0 };
-		// 	AnimationRoot.Transform = new Transform3D(PlayerBodyRoot.Transform.Basis, rootPos);
-		// }
+		if ((Velocity with { Y = 0 }).Length() > 0)
+		{
+			exp_is_running = true;
+		}
+		else
+		{
+			exp_is_running = false;
+		}
 	}
 
 
