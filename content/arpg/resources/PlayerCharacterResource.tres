@@ -8,5 +8,5 @@ Name = "Player"
 MaxHealth = 100
 MaxMana = 50
 Strength = 1
-Agility = 1
+Agility = 2
 Intelligence = 1

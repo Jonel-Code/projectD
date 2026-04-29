@@ -23,6 +23,9 @@ public partial class PlayerCharacter : CharacterBody3D
 	public Node3D AnimationRoot { get; set; } = null;
 
 	[Export]
+	public bool LerpMovementDirection { get; set; } = true;
+
+	[Export]
 	public bool exp_is_running { get; set; } = false;
 
 	protected const double StillOnFloorThreshold = 0.2;
@@ -37,7 +40,7 @@ public partial class PlayerCharacter : CharacterBody3D
 	public int CurrentJumpCount = 0;
 	protected bool AllowJump { get; set; } = false;
 
-	public const float BaseSpeed = 3f;
+	public const float BaseSpeed = 5f;
 	public float Speed
 	{
 		get
@@ -111,7 +114,6 @@ public partial class PlayerCharacter : CharacterBody3D
 
 				CameraRoot.Rotation = new Vector3(roll, yaw, 0);
 			}
-
 		}
 	}
 
@@ -192,11 +194,22 @@ public partial class PlayerCharacter : CharacterBody3D
 			direction = quat * direction;
 
 			var newVelocity = direction * Speed;
-			Velocity = Velocity with
+			var moveVelocity = Velocity with
 			{
 				X = newVelocity.X,
 				Z = newVelocity.Z,
 			};
+
+			if (LerpMovementDirection)
+			{
+				var yVel = Velocity.Y;
+				var transVel = 5f * (float)delta;
+				Velocity = Velocity.Lerp(moveVelocity, transVel) with { Y = yVel };
+			}
+			else
+			{
+				Velocity = moveVelocity;
+			}
 
 			if (PlayerBodyRoot != null)
 			{

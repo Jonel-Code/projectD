@@ -2,8 +2,8 @@
 
 [ext_resource type="Material" uid="uid://dgjiw8udooecr" path="res://addons/prototype_mini_bundle/M_prototype_dark.tres" id="1_n1vgq"]
 [ext_resource type="Material" uid="uid://cmu4vfp7y5t6b" path="res://addons/prototype_mini_bundle/M_prototype_purple.tres" id="3_h3rih"]
+[ext_resource type="PackedScene" uid="uid://1wosnpmvhqv6" path="res://content/arpg/ThirdPersonCharacter.tscn" id="4_j41pa"]
 [ext_resource type="PackedScene" uid="uid://ciuwt2yj4hcu2" path="res://addons/prototype_mini_bundle/prop_prism.tscn" id="6_s1tdj"]
-[ext_resource type="PackedScene" uid="uid://c1qt07t56flph" path="res://content/arpg/player_character.tscn" id="6_uhur4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ia7db"]
 size = Vector3(200, 1, 200)
@@ -65,9 +65,6 @@ environment = SubResource("Environment_n1vgq")
 transform = Transform3D(1, 0, 0, 0, -0.7103329, 0.7038659, 0, -0.7038659, -0.7103329, 0, 0, 0)
 shadow_enabled = true
 
-[node name="PlayerCharacter" parent="." unique_id=516359981 instance=ExtResource("6_uhur4")]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, -7.606, 10, -0.113)
-
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=360982623]
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D" unique_id=453484274]
@@ -102,3 +99,18 @@ mesh = SubResource("BoxMesh_2bvj4")
 
 [node name="PropPrism" parent="." unique_id=827137256 instance=ExtResource("6_s1tdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.145565, 0.5, 2.9624486)
+
+[node name="CameraRoot2" type="Node3D" parent="." unique_id=862427385]
+transform = Transform3D(1, 0, 0, 0, 0.8901015, 0.45576242, 0, -0.45576242, 0.8901015, -12, 1.5185866, 0)
+
+[node name="CameraBoom" type="SpringArm3D" parent="CameraRoot2" unique_id=1666456249]
+collision_mask = 2
+spring_length = 4.0
+
+[node name="MainCamera" type="Camera3D" parent="CameraRoot2/CameraBoom" unique_id=106950358]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+current = true
+
+[node name="SampleAnim" parent="." unique_id=2134653963 node_paths=PackedStringArray("CameraRoot") instance=ExtResource("4_j41pa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.515491, 0.00035116117, -8.267912)
+CameraRoot = NodePath("../CameraRoot2")
