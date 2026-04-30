@@ -1,8 +1,11 @@
-using System;
+using GlobalSystems;
 using Godot;
 
 public partial class PlayerCharacter : CharacterBody3D
 {
+
+	[Signal]
+	public delegate void AnimSignalEventHandler(string name);
 
 	[Export]
 	public Node3D CameraRoot { get; set; } = null;
@@ -59,6 +62,8 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	public string ResourcePath = "res://content/arpg/resources/PlayerCharacterResource.tres";
 
+	protected Godot.Collections.Array<Rid> CollisionRids = new();
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -75,6 +80,15 @@ public partial class PlayerCharacter : CharacterBody3D
 			Intelligence = 1,
 		};
 		ResourceSaver.Save(Resource, ResourcePath);
+
+		AnimSignal += OnAnimSignal;
+		CollisionRids.Add(GetRid());
+
+	}
+
+	public void OnAnimSignal(string name)
+	{
+		GD.Print("Animation signal received: " + name);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -158,7 +172,7 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (CameraRoot != null)
 		{
 			var newbasis = CameraRoot.GlobalTransform.Basis.Z with { Y = 0 };
-			return newbasis.Normalized();
+			return -newbasis.Normalized();
 		}
 		return GlobalTransform.Basis.Z.Normalized();
 	}
@@ -180,7 +194,6 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (!IsOnFloor())
 		{
 			Velocity += Gravity * Vector3.Down * (float)delta;
-			GD.Print("Applying gravity: " + Velocity);
 		}
 
 	}
@@ -214,16 +227,18 @@ public partial class PlayerCharacter : CharacterBody3D
 		}
 
 		Vector2 inputDir = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-		Vector3 direction = new Vector3(inputDir.X, 0, inputDir.Y).Normalized();
+		Vector3 direction = new Vector3(-inputDir.X, 0, inputDir.Y).Normalized();
 		if (direction != Vector3.Zero)
 		{
 			var forward = GetCameraForwardDirection();
-			var quat = new Quaternion(GlobalTransform.Basis.Z, -forward);
+			var dirQuat = new Quaternion(direction, forward);
+			var directionForward = dirQuat * Vector3.Forward;
+			var moveQuat = new Quaternion(GlobalTransform.Basis.Z, directionForward);
+
 			Transform = Transform with
 			{
-				Basis = new Basis(quat) * GlobalTransform.Basis
+				Basis = new Basis(moveQuat) * GlobalTransform.Basis,
 			};
-			// direction = quat * direction;
 			traversing = true;
 			if (AnimationTree != null)
 			{
