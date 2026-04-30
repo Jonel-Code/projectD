@@ -7,8 +7,8 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public Node3D CameraRoot { get; set; } = null;
 
-	[Export]
-	public Node3D PlayerBodyRoot { get; set; } = null;
+	// [Export]
+	// public Node3D PlayerBodyRoot { get; set; } = null;
 
 	[Export]
 	public CharacterResource Resource { get; set; } = null;
@@ -19,14 +19,17 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public AnimationTree AnimationTree { get; set; } = null;
 
-	[Export]
-	public Node3D AnimationRoot { get; set; } = null;
+	// [Export]
+	// public Node3D AnimationRoot { get; set; } = null;
+
+	// [Export]
+	// public bool LerpMovementDirection { get; set; } = true;
+
+	// [Export]
+	// public bool exp_is_running { get; set; } = false;
 
 	[Export]
-	public bool LerpMovementDirection { get; set; } = true;
-
-	[Export]
-	public bool exp_is_running { get; set; } = false;
+	public bool traversing { get; set; } = false;
 
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
@@ -77,24 +80,28 @@ public partial class PlayerCharacter : CharacterBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if ((Velocity with { Y = 0 }).Length() > 0)
-		{
-			exp_is_running = true;
-		}
-		else
-		{
-			exp_is_running = false;
-		}
+		// if ((Velocity with { Y = 0 }).Length() > 0)
+		// {
+		// 	exp_is_running = true;
+		// }
+		// else
+		// {
+		// 	exp_is_running = false;
+		// }
 	}
 
 
 	public override void _PhysicsProcess(double delta)
 	{
-		ProcessGravity(delta);
-		ProcessAirTime(delta);
+		// ProcessAirTime(delta);
 		ProcessInputAction(delta);
+		ProcessGravity(delta);
+		SyncCameraToPlayer(delta);
 		MoveAndSlide();
 	}
+
+
+
 	public override void _Input(InputEvent e)
 	{
 		if (e is InputEventMouseMotion inputEventMouseMotion)
@@ -117,34 +124,34 @@ public partial class PlayerCharacter : CharacterBody3D
 		}
 	}
 
-	private void ProcessAirTime(double delta)
-	{
-		if (CurrentJumpCount >= MaximumJumpCount)
-		{
-			AllowJump = false;
-		}
+	// private void ProcessAirTime(double delta)
+	// {
+	// 	if (CurrentJumpCount >= MaximumJumpCount)
+	// 	{
+	// 		AllowJump = false;
+	// 	}
 
-		if (!IsOnFloor())
-		{
-			if (StillOnFloorBias >= StillOnFloorThreshold)
-			{
-				if (CurrentJumpCount == 0)
-				{
-					CurrentJumpCount++;
-				}
-			}
-			else
-			{
-				StillOnFloorBias += (float)delta;
-			}
-		}
-		else
-		{
-			StillOnFloorBias = 0;
-			AllowJump = true;
-			CurrentJumpCount = 0;
-		}
-	}
+	// 	if (!IsOnFloor())
+	// 	{
+	// 		if (StillOnFloorBias >= StillOnFloorThreshold)
+	// 		{
+	// 			if (CurrentJumpCount == 0)
+	// 			{
+	// 				CurrentJumpCount++;
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			StillOnFloorBias += (float)delta;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		StillOnFloorBias = 0;
+	// 		AllowJump = true;
+	// 		CurrentJumpCount = 0;
+	// 	}
+	// }
 
 	private Vector3 GetCameraForwardDirection()
 	{
@@ -173,13 +180,34 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (!IsOnFloor())
 		{
 			Velocity += Gravity * Vector3.Down * (float)delta;
+			GD.Print("Applying gravity: " + Velocity);
 		}
 
 	}
 
+	private void SyncCameraToPlayer(double delta)
+	{
+		if (CameraRoot != null)
+		{
+			var cameraSocket = GetNode<Node3D>("%CameraSocket");
+			if (cameraSocket != null)
+			{
+				var targetPosition = cameraSocket.GlobalPosition;
+				var currentPosition = CameraRoot.GlobalPosition;
+				var alpha = (float)delta * 10f;
+				var newPosition = new Vector3(
+					Mathf.Lerp(currentPosition.X, targetPosition.X, alpha),
+					Mathf.Lerp(currentPosition.Y, targetPosition.Y, alpha / 2),
+					Mathf.Lerp(currentPosition.Z, targetPosition.Z, alpha)
+				);
+				CameraRoot.GlobalPosition = newPosition;
+			}
+		}
+	}
+
 	protected void ProcessInputAction(double delta)
 	{
-		if (Input.IsActionJustPressed("ui_accept") && AllowJump)
+		if (Input.IsActionJustPressed("ui_accept")) // && AllowJump)
 		{
 			Jump();
 			CurrentJumpCount++;
@@ -190,38 +218,23 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (direction != Vector3.Zero)
 		{
 			var forward = GetCameraForwardDirection();
-			var quat = new Quaternion(GlobalTransform.Basis.Z, forward);
-			direction = quat * direction;
-
-			var newVelocity = direction * Speed;
-			var moveVelocity = Velocity with
+			var quat = new Quaternion(GlobalTransform.Basis.Z, -forward);
+			Transform = Transform with
 			{
-				X = newVelocity.X,
-				Z = newVelocity.Z,
+				Basis = new Basis(quat) * GlobalTransform.Basis
 			};
-
-			if (LerpMovementDirection)
+			// direction = quat * direction;
+			traversing = true;
+			if (AnimationTree != null)
 			{
-				var yVel = Velocity.Y;
-				var transVel = 5f * (float)delta;
-				Velocity = Velocity.Lerp(moveVelocity, transVel) with { Y = yVel };
-			}
-			else
-			{
-				Velocity = moveVelocity;
-			}
-
-			if (PlayerBodyRoot != null)
-			{
-				var movementQuat = new Quaternion(GlobalTransform.Basis.Z, -direction);
-				var current = PlayerBodyRoot.Basis.GetRotationQuaternion();
-				const float rotationSpeed = 20f;
-				movementQuat = current.Slerp(movementQuat, (float)delta * rotationSpeed);
-				PlayerBodyRoot.Basis = new Basis(movementQuat);
+				var rootPos = AnimationTree.GetRootMotionPosition();
+				var rootVel = (Transform.Basis * rootPos) / (float)delta;
+				Velocity = rootVel with { Y = Mathf.Lerp(Velocity.Y, rootPos.Y, (float)delta) };
 			}
 		}
 		else
 		{
+			traversing = false;
 			Velocity = Velocity with
 			{
 				X = Mathf.MoveToward(Velocity.X, 0, Speed),
