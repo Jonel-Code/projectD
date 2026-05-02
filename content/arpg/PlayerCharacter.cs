@@ -32,6 +32,9 @@ public partial class PlayerCharacter : CharacterBody3D
 	// public bool exp_is_running { get; set; } = false;
 
 	[Export]
+	public bool UseInvertedRootmotionDirection { get; set; } = true;
+
+	[Export]
 	public bool traversing { get; set; } = false;
 
 	protected const double StillOnFloorThreshold = 0.2;
@@ -227,25 +230,32 @@ public partial class PlayerCharacter : CharacterBody3D
 		}
 
 		Vector2 inputDir = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-		Vector3 direction = new Vector3(-inputDir.X, 0, inputDir.Y).Normalized();
+		Vector3 direction = new Vector3(inputDir.X, 0, inputDir.Y).Normalized();
 		if (direction != Vector3.Zero)
 		{
 			var forward = GetCameraForwardDirection();
-			var dirQuat = new Quaternion(direction, forward);
-			var directionForward = dirQuat * Vector3.Forward;
-			var moveQuat = new Quaternion(GlobalTransform.Basis.Z, directionForward);
+			var forward2d = new Vector2(forward.X, forward.Z);
+			var direction2d = new Vector2(direction.X, direction.Z);
+			var directionAngle = Vector2.Up.AngleTo(direction2d);
+			var move2dRot = forward2d.Rotated(directionAngle);
+			var mainDirection = new Vector3(move2dRot.X, 0, move2dRot.Y);
+			this.GetWorldDebugSystem().DebugLine(GlobalPosition, GlobalPosition + mainDirection.Normalized(), Colors.Red, 0.1f);
 
-			Transform = Transform with
-			{
-				Basis = new Basis(moveQuat) * GlobalTransform.Basis,
-			};
+			var newTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
+
 			traversing = true;
 			if (AnimationTree != null)
 			{
 				var rootPos = AnimationTree.GetRootMotionPosition();
-				var rootVel = (Transform.Basis * rootPos) / (float)delta;
-				Velocity = rootVel with { Y = Mathf.Lerp(Velocity.Y, rootPos.Y, (float)delta) };
+				if (UseInvertedRootmotionDirection)
+				{
+					rootPos = -rootPos;
+				}
+				var globalRootPos = newTransform.Basis * rootPos;
+				var rootVel = globalRootPos / (float)delta;
+				Velocity = rootVel with { Y = Velocity.Y };
 			}
+			GlobalTransform = newTransform;
 		}
 		else
 		{
