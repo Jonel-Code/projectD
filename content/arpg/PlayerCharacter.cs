@@ -22,15 +22,6 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public AnimationTree AnimationTree { get; set; } = null;
 
-	// [Export]
-	// public Node3D AnimationRoot { get; set; } = null;
-
-	// [Export]
-	// public bool LerpMovementDirection { get; set; } = true;
-
-	// [Export]
-	// public bool exp_is_running { get; set; } = false;
-
 	[Export]
 	public bool traversing { get; set; } = false;
 
@@ -63,7 +54,7 @@ public partial class PlayerCharacter : CharacterBody3D
 	public string ResourcePath = "res://content/arpg/resources/PlayerCharacterResource.tres";
 	protected Godot.Collections.Array<Rid> CollisionRids = new();
 
-	protected Basis SkeletonLocalRotation { get; set; } = Basis.Identity;
+	protected Basis AnimationLocalRotation { get; set; } = Basis.Identity;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -85,9 +76,14 @@ public partial class PlayerCharacter : CharacterBody3D
 		AnimSignal += OnAnimSignal;
 		CollisionRids.Add(GetRid());
 
+		SyncAnimationRotationToSkeletonRotation();
+	}
+
+	protected void SyncAnimationRotationToSkeletonRotation()
+	{
 		if (Skeleton != null)
 		{
-			SkeletonLocalRotation = Skeleton.Basis;
+			AnimationLocalRotation = Skeleton.Basis;
 		}
 	}
 
@@ -95,20 +91,6 @@ public partial class PlayerCharacter : CharacterBody3D
 	{
 		GD.Print("Animation signal received: " + name);
 	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		// if ((Velocity with { Y = 0 }).Length() > 0)
-		// {
-		// 	exp_is_running = true;
-		// }
-		// else
-		// {
-		// 	exp_is_running = false;
-		// }
-	}
-
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -118,8 +100,6 @@ public partial class PlayerCharacter : CharacterBody3D
 		SyncCameraToPlayer(delta);
 		MoveAndSlide();
 	}
-
-
 
 	public override void _Input(InputEvent e)
 	{
@@ -149,7 +129,6 @@ public partial class PlayerCharacter : CharacterBody3D
 	// 	{
 	// 		AllowJump = false;
 	// 	}
-
 	// 	if (!IsOnFloor())
 	// 	{
 	// 		if (StillOnFloorBias >= StillOnFloorThreshold)
@@ -248,7 +227,7 @@ public partial class PlayerCharacter : CharacterBody3D
 			if (AnimationTree != null)
 			{
 				var rootPos = AnimationTree.GetRootMotionPosition();
-				var globalRootPos = SkeletonLocalRotation * newTransform.Basis * rootPos;
+				var globalRootPos = AnimationLocalRotation * newTransform.Basis * rootPos;
 				var rootVel = globalRootPos / (float)delta;
 				Velocity = rootVel with { Y = Velocity.Y };
 			}
