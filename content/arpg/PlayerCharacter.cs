@@ -10,8 +10,8 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public Node3D CameraRoot { get; set; } = null;
 
-	// [Export]
-	// public Node3D PlayerBodyRoot { get; set; } = null;
+	[Export]
+	public Skeleton3D Skeleton { get; set; } = null;
 
 	[Export]
 	public CharacterResource Resource { get; set; } = null;
@@ -30,9 +30,6 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	// [Export]
 	// public bool exp_is_running { get; set; } = false;
-
-	[Export]
-	public bool UseInvertedRootmotionDirection { get; set; } = true;
 
 	[Export]
 	public bool traversing { get; set; } = false;
@@ -61,11 +58,12 @@ public partial class PlayerCharacter : CharacterBody3D
 			return BaseSpeed;
 		}
 	}
+
 	protected Input.MouseModeEnum MouseMode = Input.MouseModeEnum.Captured;
-
 	public string ResourcePath = "res://content/arpg/resources/PlayerCharacterResource.tres";
-
 	protected Godot.Collections.Array<Rid> CollisionRids = new();
+
+	protected Basis SkeletonLocalRotation { get; set; } = Basis.Identity;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -87,6 +85,10 @@ public partial class PlayerCharacter : CharacterBody3D
 		AnimSignal += OnAnimSignal;
 		CollisionRids.Add(GetRid());
 
+		if (Skeleton != null)
+		{
+			SkeletonLocalRotation = Skeleton.Basis;
+		}
 	}
 
 	public void OnAnimSignal(string name)
@@ -239,7 +241,6 @@ public partial class PlayerCharacter : CharacterBody3D
 			var directionAngle = Vector2.Up.AngleTo(direction2d);
 			var move2dRot = forward2d.Rotated(directionAngle);
 			var mainDirection = new Vector3(move2dRot.X, 0, move2dRot.Y);
-			this.GetWorldDebugSystem().DebugLine(GlobalPosition, GlobalPosition + mainDirection.Normalized(), Colors.Red, 0.1f);
 
 			var newTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
 
@@ -247,11 +248,7 @@ public partial class PlayerCharacter : CharacterBody3D
 			if (AnimationTree != null)
 			{
 				var rootPos = AnimationTree.GetRootMotionPosition();
-				if (UseInvertedRootmotionDirection)
-				{
-					rootPos = -rootPos;
-				}
-				var globalRootPos = newTransform.Basis * rootPos;
+				var globalRootPos = SkeletonLocalRotation * newTransform.Basis * rootPos;
 				var rootVel = globalRootPos / (float)delta;
 				Velocity = rootVel with { Y = Velocity.Y };
 			}
