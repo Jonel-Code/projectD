@@ -1,0 +1,8 @@
+[gd_resource type="AnimationNodeStateMachine" format=3 uid="uid://brirq5jajubj3"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dnc0y"]
+animation = &"Imported/Idle"
+
+[resource]
+states/Imported_Idle/node = SubResource("AnimationNodeAnimation_dnc0y")
+states/Imported_Idle/position = Vector2(424, 73)

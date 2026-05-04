@@ -1,4 +1,3 @@
-using GlobalSystems;
 using Godot;
 
 public partial class PlayerCharacter : CharacterBody3D
@@ -17,13 +16,18 @@ public partial class PlayerCharacter : CharacterBody3D
 	public CharacterResource Resource { get; set; } = null;
 
 	[Export]
-	public AnimationPlayer AnimationPlayer { get; set; } = null;
+	public AnimationPlayer AnimPlayer { get; set; } = null;
 
 	[Export]
-	public AnimationTree AnimationTree { get; set; } = null;
+	public AnimationTree AnimTree { get; set; } = null;
 
 	[Export]
-	public bool traversing { get; set; } = false;
+	public RootMotionPlayerComponent RootMotionPlayer { get; set; } = null;
+
+	protected string CurrentRootMotionAnimation = "";
+
+	[Export]
+	public bool Traversing { get; set; } = false;
 
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
@@ -123,34 +127,6 @@ public partial class PlayerCharacter : CharacterBody3D
 		}
 	}
 
-	// private void ProcessAirTime(double delta)
-	// {
-	// 	if (CurrentJumpCount >= MaximumJumpCount)
-	// 	{
-	// 		AllowJump = false;
-	// 	}
-	// 	if (!IsOnFloor())
-	// 	{
-	// 		if (StillOnFloorBias >= StillOnFloorThreshold)
-	// 		{
-	// 			if (CurrentJumpCount == 0)
-	// 			{
-	// 				CurrentJumpCount++;
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			StillOnFloorBias += (float)delta;
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		StillOnFloorBias = 0;
-	// 		AllowJump = true;
-	// 		CurrentJumpCount = 0;
-	// 	}
-	// }
-
 	private Vector3 GetCameraForwardDirection()
 	{
 		if (CameraRoot != null)
@@ -220,22 +196,13 @@ public partial class PlayerCharacter : CharacterBody3D
 			var directionAngle = Vector2.Up.AngleTo(direction2d);
 			var move2dRot = forward2d.Rotated(directionAngle);
 			var mainDirection = new Vector3(move2dRot.X, 0, move2dRot.Y);
-
-			var newTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
-
-			traversing = true;
-			if (AnimationTree != null)
-			{
-				var rootPos = AnimationTree.GetRootMotionPosition();
-				var globalRootPos = AnimationLocalRotation * newTransform.Basis * rootPos;
-				var rootVel = globalRootPos / (float)delta;
-				Velocity = rootVel with { Y = Velocity.Y };
-			}
-			GlobalTransform = newTransform;
+			GlobalTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
+			RootMotionPlayer?.PlayRootMotion("Imported/Walking");
+			SyncRootMotionPostion(delta);
 		}
 		else
 		{
-			traversing = false;
+			RootMotionPlayer?.StopCurrentRootMotion();
 			Velocity = Velocity with
 			{
 				X = Mathf.MoveToward(Velocity.X, 0, Speed),
@@ -255,5 +222,16 @@ public partial class PlayerCharacter : CharacterBody3D
 		{
 			Y = JumpVelocity.Y,
 		};
+	}
+
+	protected void SyncRootMotionPostion(double delta)
+	{
+		if (AnimTree != null)
+		{
+			var rootPos = AnimTree.GetRootMotionPosition();
+			var globalRootPos = AnimationLocalRotation * GlobalTransform.Basis * rootPos;
+			var rootVel = globalRootPos / (float)delta;
+			Velocity = rootVel with { Y = Velocity.Y };
+		}
 	}
 }
