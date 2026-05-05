@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerActionResource" format=3 uid="uid://cni3cnsfvit1a"]
+
+[ext_resource type="Script" uid="uid://w0uilm54lsmy" path="res://content/arpg/resources/PlayerActionResource.cs" id="1_uoc1q"]
+[ext_resource type="Animation" uid="uid://3to4yjgyh61b" path="res://addons/animations/mixamo/Kicking_1.anim" id="1_ybsbb"]
+
+[resource]
+script = ExtResource("1_uoc1q")
+Name = "DoubleKick"
+InputActionName = "attack_special"
+AnimationResource = ExtResource("1_ybsbb")
+metadata/_custom_type_script = "uid://w0uilm54lsmy"

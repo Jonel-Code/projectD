@@ -1,10 +1,21 @@
+using System;
+using System.Collections.Generic;
 using Godot;
+
+public struct PlayerActionData
+{
+	public string AnimationName;
+	public string InputActionName;
+}
 
 public partial class PlayerCharacter : CharacterBody3D
 {
 
 	[Signal]
 	public delegate void AnimSignalEventHandler(string name);
+
+	[Export]
+	public Node3D SkeletonParent { get; set; } = null;
 
 	[Export]
 	public Node3D CameraRoot { get; set; } = null;
@@ -28,6 +39,12 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	[Export]
 	public bool Traversing { get; set; } = false;
+
+	[Export]
+	public Godot.Collections.Array<PlayerActionResource> Actions { get; set; }
+
+	protected Dictionary<String, PlayerActionData> PlayerActions = new();
+
 
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
@@ -60,6 +77,11 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	protected Basis AnimationLocalRotation { get; set; } = Basis.Identity;
 
+	protected bool UseRootMotionVelocity = false;
+	protected bool ApplyGravity = true;
+	protected NodePath OriginalRootNodePath = new NodePath("");
+
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -81,6 +103,26 @@ public partial class PlayerCharacter : CharacterBody3D
 		CollisionRids.Add(GetRid());
 
 		SyncAnimationRotationToSkeletonRotation();
+		SetupPlayerActions();
+	}
+
+	private void SetupPlayerActions()
+	{
+		if (AnimPlayer != null)
+		{
+			foreach (var Action in Actions)
+			{
+				var loadedName = Action.Name;
+				if (PreloadAnimation(ref loadedName, Action.AnimationResource))
+				{
+					PlayerActions[Action.Name] = new PlayerActionData
+					{
+						InputActionName = Action.InputActionName,
+						AnimationName = loadedName,
+					};
+				}
+			}
+		}
 	}
 
 	protected void SyncAnimationRotationToSkeletonRotation()
@@ -151,7 +193,7 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	private void ProcessGravity(double delta)
 	{
-		if (!IsOnFloor())
+		if (!IsOnFloor() && ApplyGravity)
 		{
 			Velocity += Gravity * Vector3.Down * (float)delta;
 		}
@@ -197,12 +239,15 @@ public partial class PlayerCharacter : CharacterBody3D
 			var move2dRot = forward2d.Rotated(directionAngle);
 			var mainDirection = new Vector3(move2dRot.X, 0, move2dRot.Y);
 			GlobalTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
-			RootMotionPlayer?.PlayRootMotion("Imported/Walking");
-			SyncRootMotionPostion(delta);
+			Traversing = true;
+			UseRootMotionVelocity = true;
+			// RootMotionPlayer?.PlayRootMotion("Imported/Walking");
+			// SyncRootMotionPostion(delta);
 		}
 		else
 		{
-			RootMotionPlayer?.StopCurrentRootMotion();
+			Traversing = false;
+			// RootMotionPlayer?.StopCurrentRootMotion();
 			Velocity = Velocity with
 			{
 				X = Mathf.MoveToward(Velocity.X, 0, Speed),
@@ -213,6 +258,20 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (Input.IsActionJustPressed("ui_toggle_mouse"))
 		{
 			ToggleMouse();
+		}
+
+		foreach (var key in PlayerActions.Keys)
+		{
+			var action = PlayerActions[key];
+			if (Input.IsActionJustPressed(action.InputActionName))
+			{
+				RootMotionPlayer?.PlayRootMotion(action.AnimationName);
+			}
+		}
+
+		if (UseRootMotionVelocity)
+		{
+			SyncRootMotionPostion(delta);
 		}
 	}
 
@@ -231,7 +290,72 @@ public partial class PlayerCharacter : CharacterBody3D
 			var rootPos = AnimTree.GetRootMotionPosition();
 			var globalRootPos = AnimationLocalRotation * GlobalTransform.Basis * rootPos;
 			var rootVel = globalRootPos / (float)delta;
-			Velocity = rootVel with { Y = Velocity.Y };
+			if (ApplyGravity)
+			{
+				rootVel.Y = Velocity.Y;
+			}
+			Velocity = rootVel;
 		}
+	}
+
+	// returns true if preload is success and modifiying the input animationName
+	protected bool PreloadAnimation(ref string animationName, Animation toLoad)
+	{
+		if (AnimPlayer != null)
+		{
+			var lib = AnimPlayer.GetAnimationLibrary("Imported");
+			if (lib != null)
+			{
+				lib.AddAnimation(animationName, toLoad);
+				animationName = "Imported/" + animationName;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void HandleAnimationSignal(string name)
+	{
+		GD.Print("Animation signal received: " + name);
+		if (name == "ActionStart")
+		{
+			if (AnimTree != null)
+			{
+				OriginalRootNodePath = AnimTree.RootMotionTrack;
+				AnimTree.RootMotionTrack = new NodePath("");
+			}
+			// UseRootMotionVelocity = true;
+			// ApplyGravity = false;
+		}
+
+		if (name == "ActionDone")
+		{
+			RootMotionPlayer?.StopCurrentRootMotion();
+
+			CallDeferred(MethodName.ResetAnimTreeTrack);
+			// UseRootMotionVelocity = false;
+			// ApplyGravity = true;
+		}
+	}
+
+	protected void ResetAnimTreeTrack()
+	{
+		if (AnimTree != null)
+		{
+			AnimTree.RootMotionTrack = OriginalRootNodePath;
+		}
+
+		if (Skeleton != null)
+		{
+			if (Skeleton.GetBoneCount() > 1)
+			{
+				Skeleton.SetBonePosePosition(1, Vector3.Zero);
+			}
+		}
+		// if (AnimTree != null)
+		// {
+		// 	AnimTree.GetRootMotionPosition();
+		// 	AnimTree.GetRootMotionRotation();
+		// }
 	}
 }
