@@ -2,9 +2,9 @@ import bpy
 from bpy_extras import anim_utils
 
 bl_info = {
-    "name": "Batch Root Bone Setup (Selective)",
+    "name": "Batch Root Bone Setup (collection)",
     "author": "Gemini Ai (Adjusted by Dev-Jonel)",
-    "version": (1, 1),
+    "version": (1, 2),
     "blender": (5, 1, 0),
     "location": "View3D > Sidebar > Rigging",
     "description": "Adds a root bone and moves ONLY location channels to a new group",
@@ -38,27 +38,6 @@ class RIG_OT_batch_root_setup(bpy.types.Operator):
         new_root = armature.edit_bones.get(new_root_name) or armature.edit_bones.new(new_root_name)
         new_root.head = (0, 0, 0)
         new_root.tail = (0, 50, 0)
-
-        # 3. Handle Animation in POSE MODE
-        bpy.ops.object.mode_set(mode='POSE')
-        if obj.animation_data and obj.animation_data.action:
-            adt = obj.animation_data
-            channelbag = anim_utils.action_get_channelbag_for_slot(adt.action, adt.action_slot)
-
-            if channelbag and hasattr(channelbag, "fcurves"):
-                old_path_target = f'pose.bones["{original_root_name}"].location'
-                new_path_target = f'pose.bones["{new_root_name}"].location'
-
-                # Ensure a specific group exists for the NEW root
-                root_group = channelbag.groups.get(new_root_name) or channelbag.groups.new(name=new_root_name)
-
-                for fc in channelbag.fcurves:
-                    # ONLY move the path if it matches the LOCATION target
-                    if fc.data_path == old_path_target:
-                        fc.data_path = new_path_target
-                        # Move this specific F-Curve to the new 'root' group
-                        # This leaves Rotation/Scale in the original 'mixamorig:Hips' group
-                        fc.group = root_group
 
         # 4. Final Parenting in EDIT MODE
         bpy.ops.object.mode_set(mode='EDIT')

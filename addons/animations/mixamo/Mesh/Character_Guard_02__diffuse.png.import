@@ -2,23 +2,24 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bglxaggklyr2"
-path="res://.godot/imported/BasicMoves_Guard_02__specular.png-de6115291e8be66a3ab8d521a487d40a.ctex"
+uid="uid://40cjwdi162qc"
+path.s3tc="res://.godot/imported/Character_Guard_02__diffuse.png-0d04cbc5db67f7a18e091d39c87f5819.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 generator_parameters={
-"md5": "4201468097ebb1a15961ee25c2d64310"
+"md5": "a1dc5c32f83d0182b6af19d596014cce"
 }
 
 [deps]
 
-source_file="res://addons/animations/mixamo/BasicMoves_Guard_02__specular.png"
-dest_files=["res://.godot/imported/BasicMoves_Guard_02__specular.png-de6115291e8be66a3ab8d521a487d40a.ctex"]
+source_file="res://addons/animations/mixamo/Mesh/Character_Guard_02__diffuse.png"
+dest_files=["res://.godot/imported/Character_Guard_02__diffuse.png-0d04cbc5db67f7a18e091d39c87f5819.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -40,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

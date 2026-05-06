@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u76s1nj5v6va"
-path.s3tc="res://.godot/imported/BasicMoves_Guard_02__diffuse.png-180337a26ce5f503f9e05afb05bb0211.s3tc.ctex"
+uid="uid://c1glf6ffs1t40"
+path.s3tc="res://.godot/imported/Character_Guard_02__normal.png-4a034d47c186493803a433de7db40244.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "a1dc5c32f83d0182b6af19d596014cce"
+"md5": "16d2ed20714fd916290f48d68a233060"
 }
 
 [deps]
 
-source_file="res://addons/animations/mixamo/BasicMoves_Guard_02__diffuse.png"
-dest_files=["res://.godot/imported/BasicMoves_Guard_02__diffuse.png-180337a26ce5f503f9e05afb05bb0211.s3tc.ctex"]
+source_file="res://addons/animations/mixamo/Mesh/Character_Guard_02__normal.png"
+dest_files=["res://.godot/imported/Character_Guard_02__normal.png-4a034d47c186493803a433de7db40244.s3tc.ctex"]
 
 [params]
 
@@ -25,12 +25,12 @@ compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=0
-roughness/src_normal=""
+roughness/mode=1
+roughness/src_normal="res://addons/animations/mixamo/Mesh/Character_Guard_02__normal.png"
 process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
