@@ -241,13 +241,10 @@ public partial class PlayerCharacter : CharacterBody3D
 			GlobalTransform = GlobalTransform.LookingAt(GlobalPosition + mainDirection.Normalized(), Vector3.Up);
 			Traversing = true;
 			UseRootMotionVelocity = true;
-			// RootMotionPlayer?.PlayRootMotion("Imported/Walking");
-			// SyncRootMotionPostion(delta);
 		}
 		else
 		{
 			Traversing = false;
-			// RootMotionPlayer?.StopCurrentRootMotion();
 			Velocity = Velocity with
 			{
 				X = Mathf.MoveToward(Velocity.X, 0, Speed),
@@ -319,39 +316,32 @@ public partial class PlayerCharacter : CharacterBody3D
 		GD.Print("Animation signal received: " + name);
 		if (name == "ActionStart")
 		{
-			if (AnimTree != null)
-			{
-				OriginalRootNodePath = AnimTree.RootMotionTrack;
-				AnimTree.RootMotionTrack = new NodePath("");
-			}
-			// UseRootMotionVelocity = true;
-			// ApplyGravity = false;
+			UseRootMotionVelocity = true;
+			ApplyGravity = false;
 		}
 
 		if (name == "ActionDone")
 		{
 			RootMotionPlayer?.StopCurrentRootMotion();
-
-			CallDeferred(MethodName.ResetAnimTreeTrack);
-			// UseRootMotionVelocity = false;
-			// ApplyGravity = true;
+			UseRootMotionVelocity = false;
+			ApplyGravity = true;
 		}
 	}
 
 	protected void ResetAnimTreeTrack()
 	{
-		if (AnimTree != null)
-		{
-			AnimTree.RootMotionTrack = OriginalRootNodePath;
-		}
+		// if (AnimTree != null)
+		// {
+		// 	AnimTree.RootMotionTrack = OriginalRootNodePath;
+		// }
 
-		if (Skeleton != null)
-		{
-			if (Skeleton.GetBoneCount() > 1)
-			{
-				Skeleton.SetBonePosePosition(1, Vector3.Zero);
-			}
-		}
+		// if (Skeleton != null)
+		// {
+		// 	if (Skeleton.GetBoneCount() > 1)
+		// 	{
+		// 		Skeleton.SetBonePosePosition(1, Vector3.Zero);
+		// 	}
+		// }
 		// if (AnimTree != null)
 		// {
 		// 	AnimTree.GetRootMotionPosition();

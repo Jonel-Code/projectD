@@ -112,5 +112,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 current = true
 
 [node name="PlayerCharacter" parent="." unique_id=735578512 node_paths=PackedStringArray("CameraRoot") instance=ExtResource("4_j41pa")]
-transform = Transform3D(0.98320407, 0, -0.18251006, 0, 1, 0, 0.18251006, 0, 0.98320407, -14.337214, 1.0844446, -15.47566)
+transform = Transform3D(0.98320407, 0, -0.18251006, 0, 1, 0, 0.18251006, 0, 0.98320407, -14.337214, 0.08444464, -15.47566)
 CameraRoot = NodePath("../CameraRoot")
