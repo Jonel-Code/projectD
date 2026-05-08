@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GlobalSystems;
 using Godot;
 
 public struct PlayerActionData
@@ -8,12 +9,14 @@ public struct PlayerActionData
 	public string InputActionName;
 }
 
+public struct BoneHurtBox
+{
+	public Shape3D BoxShape;
+	public int BoneIndex;
+}
+
 public partial class PlayerCharacter : CharacterBody3D
 {
-
-	[Signal]
-	public delegate void AnimSignalEventHandler(string name);
-
 	[Export]
 	public Node3D SkeletonParent { get; set; } = null;
 
@@ -44,7 +47,6 @@ public partial class PlayerCharacter : CharacterBody3D
 	public Godot.Collections.Array<PlayerActionResource> Actions { get; set; }
 
 	protected Dictionary<String, PlayerActionData> PlayerActions = new();
-
 
 	protected const double StillOnFloorThreshold = 0.2;
 	protected double StillOnFloorBias = 0;
@@ -81,10 +83,13 @@ public partial class PlayerCharacter : CharacterBody3D
 	protected bool ApplyGravity = true;
 	protected NodePath OriginalRootNodePath = new NodePath("");
 
+	protected List<BoneHurtBox> BoneHurtBoxes = new();
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		BoneHurtBoxes.EnsureCapacity(10);
 		Input.MouseMode = MouseMode;
 
 		Resource = ResourceLoader.Load<CharacterResource>(ResourcePath);
@@ -99,11 +104,29 @@ public partial class PlayerCharacter : CharacterBody3D
 		};
 		ResourceSaver.Save(Resource, ResourcePath);
 
-		AnimSignal += OnAnimSignal;
 		CollisionRids.Add(GetRid());
 
 		SyncAnimationRotationToSkeletonRotation();
 		SetupPlayerActions();
+
+		if (RootMotionPlayer != null)
+		{
+			RootMotionPlayer.OnRootAnimationEnd += OnRootAnimationEnd;
+		}
+	}
+
+	public override void _ExitTree()
+	{
+		if (RootMotionPlayer != null)
+		{
+			RootMotionPlayer.OnRootAnimationEnd -= OnRootAnimationEnd;
+		}
+	}
+
+	private void OnRootAnimationEnd(string animationName)
+	{
+		UseRootMotionVelocity = false;
+		ApplyGravity = true;
 	}
 
 	private void SetupPlayerActions()
@@ -132,12 +155,6 @@ public partial class PlayerCharacter : CharacterBody3D
 			AnimationLocalRotation = Skeleton.Basis;
 		}
 	}
-
-	public void OnAnimSignal(string name)
-	{
-		GD.Print("Animation signal received: " + name);
-	}
-
 	public override void _PhysicsProcess(double delta)
 	{
 		// ProcessAirTime(delta);
@@ -145,6 +162,28 @@ public partial class PlayerCharacter : CharacterBody3D
 		ProcessGravity(delta);
 		SyncCameraToPlayer(delta);
 		MoveAndSlide();
+		ProcessHurtBoxes(delta);
+	}
+
+	private void ProcessHurtBoxes(double delta)
+	{
+		if (Skeleton != null)
+		{
+			foreach (var item in BoneHurtBoxes)
+			{
+				if (item.BoneIndex >= 0)
+				{
+					var local = Skeleton.GetBoneGlobalPose(item.BoneIndex);
+					var global = Skeleton.GlobalTransform * local.Origin;
+					if (item.BoxShape is SphereShape3D sphere)
+					{
+						// TODO: add collision detection here
+						this.GetWorldDebugSystem().DebugSphere(global, sphere.Radius, Colors.Red, (float)delta);
+					}
+				}
+			}
+
+		}
 	}
 
 	public override void _Input(InputEvent e)
@@ -262,7 +301,9 @@ public partial class PlayerCharacter : CharacterBody3D
 			var action = PlayerActions[key];
 			if (Input.IsActionJustPressed(action.InputActionName))
 			{
-				RootMotionPlayer?.PlayRootMotion(action.AnimationName);
+				RootMotionPlayer?.PlayRootMotion(action.AnimationName, "ActionDone");
+				UseRootMotionVelocity = true;
+				ApplyGravity = false;
 			}
 		}
 
@@ -313,18 +354,77 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	public void HandleAnimationSignal(string name)
 	{
+		// GD.Print("Animation signal received: " + name);
+		// if (name == "ActionStart")
+		// {
+		// 	UseRootMotionVelocity = true;
+		// 	ApplyGravity = false;
+		// }
+
+		// if (name == "ActionDone")
+		// {
+		// 	RootMotionPlayer?.StopCurrentRootMotion();
+		// 	UseRootMotionVelocity = false;
+		// 	ApplyGravity = true;
+		// }
+
 		GD.Print("Animation signal received: " + name);
-		if (name == "ActionStart")
+		if (name == "LeftFeetAttack")
 		{
-			UseRootMotionVelocity = true;
-			ApplyGravity = false;
+			var boneIndex = Skeleton.FindBone("LeftFoot");
+			if (boneIndex >= 0)
+			{
+				BoneHurtBoxes.Add(new BoneHurtBox
+				{
+					BoxShape = new SphereShape3D
+					{
+						Radius = 0.5f,
+					},
+					BoneIndex = boneIndex,
+				});
+			}
 		}
 
-		if (name == "ActionDone")
+		if (name == "LeftFeetAttackEnd")
 		{
-			RootMotionPlayer?.StopCurrentRootMotion();
-			UseRootMotionVelocity = false;
-			ApplyGravity = true;
+			var boneIdx = Skeleton.FindBone("LeftFoot");
+			for (int i = BoneHurtBoxes.Count - 1; i >= 0; i--)
+			{
+				var box = BoneHurtBoxes[i];
+				if (box.BoneIndex == boneIdx)
+				{
+					BoneHurtBoxes.RemoveAt(i);
+				}
+			}
+		}
+
+		if (name == "RightFeetAttack")
+		{
+			var boneIndex = Skeleton.FindBone("RightFoot");
+			if (boneIndex >= 0)
+			{
+				BoneHurtBoxes.Add(new BoneHurtBox
+				{
+					BoxShape = new SphereShape3D
+					{
+						Radius = 0.5f,
+					},
+					BoneIndex = boneIndex,
+				});
+			}
+		}
+
+		if (name == "RightFeetAttackEnd")
+		{
+			var boneIdx = Skeleton.FindBone("RightFoot");
+			for (int i = BoneHurtBoxes.Count - 1; i >= 0; i--)
+			{
+				var box = BoneHurtBoxes[i];
+				if (box.BoneIndex == boneIdx)
+				{
+					BoneHurtBoxes.RemoveAt(i);
+				}
+			}
 		}
 	}
 

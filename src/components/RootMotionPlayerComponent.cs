@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 /// <summary>
@@ -7,15 +8,65 @@ using Godot;
 public partial class RootMotionPlayerComponent : Node
 {
     [Export]
+    public AnimationSignalReciever AnimSignalReciever { get; set; } = null;
+
+    [Export]
     public AnimationTree AnimTree { get; set; } = null;
 
     [Export]
     public float RootBlendTime = 0.0f;
 
+    [Signal]
+    public delegate void OnRootAnimationEndEventHandler(string animationName);
+
     protected string CurrentRootMotionAnimation = "";
     protected float CurrentBlendPos = 0;
     protected float TargetBlendPos = 0;
     protected bool ShouldCleanupRootPos = false;
+    protected string EndSignal = "";
+
+    public override void _Ready()
+    {
+        if (AnimSignalReciever != null)
+        {
+            AnimSignalReciever.AnimSignal += OnAnimSignal;
+        }
+
+        if (AnimTree != null)
+        {
+            AnimTree.AnimationFinished += OnAnimationFinished;
+        }
+    }
+
+    public override void _ExitTree()
+    {
+        if (AnimSignalReciever != null)
+        {
+            AnimSignalReciever.AnimSignal -= OnAnimSignal;
+        }
+
+        if (AnimTree != null)
+        {
+            AnimTree.AnimationFinished -= OnAnimationFinished;
+        }
+    }
+
+    private void OnAnimationFinished(StringName animName)
+    {
+        if (EndSignal == "" && CurrentRootMotionAnimation != "")
+        {
+            EmitSignal(SignalName.OnRootAnimationEnd, CurrentRootMotionAnimation);
+        }
+    }
+
+    private void OnAnimSignal(string name)
+    {
+        if (EndSignal != "" && name == EndSignal)
+        {
+            StopCurrentRootMotion();
+            EmitSignal(SignalName.OnRootAnimationEnd, CurrentRootMotionAnimation);
+        }
+    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -40,7 +91,7 @@ public partial class RootMotionPlayerComponent : Node
         }
     }
 
-    public void PlayRootMotion(string animationName)
+    public void PlayRootMotion(string animationName, string playUntil = "")
     {
         if (CurrentRootMotionAnimation == animationName)
         {
@@ -59,6 +110,7 @@ public partial class RootMotionPlayerComponent : Node
         }
         AnimTree.Active = true;
         CurrentRootMotionAnimation = animationName;
+        EndSignal = playUntil;
     }
 
     public void StopCurrentRootMotion()
