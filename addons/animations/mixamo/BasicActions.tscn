@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ddbwa5h556y4i"]
 
-[node name="GeneralSkeleton" type="Skeleton3D" unique_id=811007589]
+[node name="GeneralSkeleton" type="Skeleton3D" unique_id=1287932433]
 unique_name_in_owner = true
 motion_scale = 1.001165
 bones/0/name = "Root"

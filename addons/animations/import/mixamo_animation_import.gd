@@ -21,19 +21,12 @@ func _post_import(scene):
 	if first_root_child == "":
 		return scene
 
-	var path = get_source_file()
-	var file_path = path.split('.').slice(0, -1)
-	path = ".".join(file_path)
-	var skeletonScene = PackedScene.new()
-	var skeletonResult = skeletonScene.pack(skeleton)
-	if skeletonResult == OK:
-		var res = ResourceSaver.save(skeletonScene, path + '.tscn')
-		print("saving: ", path + ".tscn ", res, OK)
-
 	var anim_player: AnimationPlayer = scene.get_node_or_null("AnimationPlayer")
 	if anim_player:
 		for anim_name in anim_player.get_animation_list():
 			var anim = anim_player.get_animation(anim_name)
+			var root_track_idx = anim.add_track(Animation.TYPE_POSITION_3D)
+
 			for track_idx in anim.get_track_count():
 				var type = anim.track_get_type(track_idx)
 				var track_name = anim.track_get_path(track_idx)
@@ -41,13 +34,16 @@ func _post_import(scene):
 				var subnames = track_name.get_concatenated_subnames();
 				if type == Animation.TYPE_POSITION_3D && subnames.contains(first_root_child):
 					var key_count = anim.track_get_key_count(track_idx)
+					var new_name = NodePath(str(names) + ":" + subnames.replace(first_root_child, root_name))
+					anim.track_set_path(root_track_idx, new_name)
+					print("added track: ", new_name)
 					if key_count > 0:
 						var first_key = anim.track_get_key_value(track_idx, 0) as Vector3
 						var root_offset = first_key - root_pos
 						for key_idx in key_count:
-							var keyValue = anim.track_get_key_value(track_idx, key_idx) as Vector3
-							var new_key_value = keyValue - root_child_offset;
-							anim.track_set_key_value(track_idx, key_idx, new_key_value)
-						var new_name = NodePath(str(names) + ":" + subnames.replace(first_root_child, root_name))
-						anim.track_set_path(track_idx, new_name)
+							var key_timing = anim.track_get_key_time(track_idx, key_idx)
+							var key_value = anim.track_get_key_value(track_idx, key_idx) as Vector3
+							anim.track_set_key_value(track_idx, key_idx, Vector3(0, key_value.y, 0))
+							anim.track_insert_key(root_track_idx, key_timing, Vector3(key_value.x, 0, key_value.z))
+
 	return scene
