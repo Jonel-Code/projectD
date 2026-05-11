@@ -46,6 +46,13 @@ public partial class PlayerCharacter : CharacterBody3D
 	[Export]
 	public Godot.Collections.Array<PlayerActionResource> Actions { get; set; }
 
+	[Export]
+	public Vector3 AnimationForwardVector { get; set; } = Vector3.Forward;
+
+	[Export]
+	public bool SkeletonFollowAnimationForward { get; set; } = false;
+
+
 	protected Dictionary<String, PlayerActionData> PlayerActions = new();
 
 	protected const double StillOnFloorThreshold = 0.2;
@@ -113,6 +120,12 @@ public partial class PlayerCharacter : CharacterBody3D
 		{
 			RootMotionPlayer.OnRootAnimationEnd += OnRootAnimationEnd;
 		}
+
+		if (SkeletonFollowAnimationForward && Skeleton != null && AnimationForwardVector != Vector3.Zero)
+		{
+			var rot = new Quaternion(Vector3.Forward, AnimationForwardVector);
+			Skeleton.Basis = new Basis(rot);
+		}
 	}
 
 	public override void _ExitTree()
@@ -164,6 +177,7 @@ public partial class PlayerCharacter : CharacterBody3D
 		MoveAndSlide();
 		ProcessHurtBoxes(delta);
 	}
+
 
 	private void ProcessHurtBoxes(double delta)
 	{
@@ -326,6 +340,11 @@ public partial class PlayerCharacter : CharacterBody3D
 		if (AnimTree != null)
 		{
 			var rootPos = AnimTree.GetRootMotionPosition();
+			if (AnimationForwardVector != Vector3.Zero)
+			{
+				var forwardRot = new Quaternion(Vector3.Forward, AnimationForwardVector);
+				rootPos = forwardRot * rootPos;
+			}
 			var globalRootPos = AnimationLocalRotation * GlobalTransform.Basis * rootPos;
 			var rootVel = globalRootPos / (float)delta;
 			if (ApplyGravity)
@@ -354,20 +373,6 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	public void HandleAnimationSignal(string name)
 	{
-		// GD.Print("Animation signal received: " + name);
-		// if (name == "ActionStart")
-		// {
-		// 	UseRootMotionVelocity = true;
-		// 	ApplyGravity = false;
-		// }
-
-		// if (name == "ActionDone")
-		// {
-		// 	RootMotionPlayer?.StopCurrentRootMotion();
-		// 	UseRootMotionVelocity = false;
-		// 	ApplyGravity = true;
-		// }
-
 		GD.Print("Animation signal received: " + name);
 		if (name == "LeftFeetAttack")
 		{
@@ -426,26 +431,5 @@ public partial class PlayerCharacter : CharacterBody3D
 				}
 			}
 		}
-	}
-
-	protected void ResetAnimTreeTrack()
-	{
-		// if (AnimTree != null)
-		// {
-		// 	AnimTree.RootMotionTrack = OriginalRootNodePath;
-		// }
-
-		// if (Skeleton != null)
-		// {
-		// 	if (Skeleton.GetBoneCount() > 1)
-		// 	{
-		// 		Skeleton.SetBonePosePosition(1, Vector3.Zero);
-		// 	}
-		// }
-		// if (AnimTree != null)
-		// {
-		// 	AnimTree.GetRootMotionPosition();
-		// 	AnimTree.GetRootMotionRotation();
-		// }
 	}
 }
