@@ -3,6 +3,7 @@
 [ext_resource type="Material" uid="uid://dgjiw8udooecr" path="res://addons/prototype_mini_bundle/M_prototype_dark.tres" id="1_n1vgq"]
 [ext_resource type="Material" uid="uid://cmu4vfp7y5t6b" path="res://addons/prototype_mini_bundle/M_prototype_purple.tres" id="3_h3rih"]
 [ext_resource type="PackedScene" uid="uid://c1qt07t56flph" path="res://content/arpg/player_character.tscn" id="4_j41pa"]
+[ext_resource type="PackedScene" uid="uid://0tyeox04f0l6" path="res://content/arpg/enemy_character.tscn" id="5_2bvj4"]
 [ext_resource type="PackedScene" uid="uid://ciuwt2yj4hcu2" path="res://addons/prototype_mini_bundle/prop_prism.tscn" id="6_s1tdj"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ia7db"]
@@ -114,3 +115,6 @@ current = true
 [node name="PlayerCharacter" parent="." unique_id=974543690 node_paths=PackedStringArray("CameraRoot") instance=ExtResource("4_j41pa")]
 transform = Transform3D(0.98320407, 0, -0.18251006, 0, 1, 0, 0.18251006, 0, 0.98320407, -14.337214, 0.08444464, -15.47566)
 CameraRoot = NodePath("../CameraRoot")
+
+[node name="EnemyCharacter" parent="." unique_id=46241334 instance=ExtResource("5_2bvj4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.048262, 0.016777394, -9.143032)

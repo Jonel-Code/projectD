@@ -1,7 +1,7 @@
 using Godot;
 
 [GlobalClass]
-public partial class PlayerContext : Node
+public partial class CharacterContext : Node
 {
     [Export]
     public CharacterBody3D CharacterBody { get; set; }
@@ -10,13 +10,13 @@ public partial class PlayerContext : Node
     public Skeleton3D Skeleton { get; set; }
 
     [Export]
-    public PlayerState State { get; set; }
+    public CharacterState State { get; set; }
 }
 
 [GlobalClass]
-public partial class PlayerState : RefCounted
+public partial class CharacterState : RefCounted
 {
-    public bool MovingForward;
+    public bool Walking;
 
-    public bool RunningForward;
+    public bool Running;
 }

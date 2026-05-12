@@ -9,9 +9,9 @@ public interface PlayerAbilityInterface
 
     public void CleanUp();
 
-    protected PlayerContext Player { get; set; }
+    protected CharacterContext Player { get; set; }
 
-    public void Bind(PlayerContext owner)
+    public void Bind(CharacterContext owner)
     {
         Player = owner;
     }
