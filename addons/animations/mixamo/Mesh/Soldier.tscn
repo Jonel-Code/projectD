@@ -271,7 +271,7 @@ bind/65/name = &"mixamorig_RightToe_End"
 bind/65/bone = -1
 bind/65/pose = Transform3D(-0.996877, -0.0066386852, -0.078688525, -0.07872909, 0.0060856473, 0.9968775, -0.006139088, 0.9999597, -0.006589235, -0.15035485, -0.19142729, 0.0053183706)
 
-[node name="GeneralSkeleton" type="Skeleton3D" unique_id=64661863]
+[node name="GeneralSkeleton" type="Skeleton3D" unique_id=1610673097]
 unique_name_in_owner = true
 motion_scale = 0.9392799
 bones/0/name = "Root"
@@ -737,7 +737,7 @@ bones/65/position = Vector3(-0.00572163, 0.07244819, -0.00044227246)
 bones/65/rotation = Quaternion(-0.039385363, 0.99921393, -0.0031712176, -0.0031969526)
 bones/65/scale = Vector3(1.0000002, 1.0000001, 0.9999999)
 
-[node name="Ch15" type="MeshInstance3D" parent="." unique_id=339965287]
+[node name="Ch15" type="MeshInstance3D" parent="." unique_id=213134432]
 mesh = SubResource("ArrayMesh_in4g6")
 skin = SubResource("Skin_q0jiv")
 skeleton = NodePath("..")
