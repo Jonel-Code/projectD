@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using GlobalSystems;
 using Godot;
 
 public partial class EnemyCharacter : CharacterBody3D
@@ -17,17 +19,34 @@ public partial class EnemyCharacter : CharacterBody3D
 	[Export]
 	public AnimationTree AnimTree { get; set; } = null;
 
-	protected Vector3 TargetPosition = Vector3.Zero;
+	[Export]
+	public AnimationPlayer AnimPlayer { get; set; } = null;
 
+	[Export]
+	public float AttackDistance = 1f;
+
+	[Export]
+	public CollisionObject3D OwnCollsion { get; set; } = null;
+
+	protected Vector3 TargetPosition = Vector3.Zero;
 
 	public const float Speed = 5.0f;
 	public const float JumpVelocity = 4.5f;
 	public double NextPathCheckIn = 0;
 	protected double NextPathCheckInterval = 1;
 
+	protected double ScanInterval = 1;
+	protected double NextScanIn = 0;
+	protected bool ScanForAttack = false;
+	protected List<Rid> ExcludeAttackRid = new();
+
 	public override void _Ready()
 	{
 		IsWalking = false;
+		if (OwnCollsion != null)
+		{
+			ExcludeAttackRid.Add(OwnCollsion.GetRid());
+		}
 	}
 
 
@@ -79,8 +98,13 @@ public partial class EnemyCharacter : CharacterBody3D
 
 		if (IsWalking)
 		{
-			var preCheckPassed = !NavAgent.IsNavigationFinished() || !NavAgent.IsTargetReached();
-			if (preCheckPassed)
+			var targetReached = NavAgent.IsNavigationFinished() || NavAgent.IsTargetReached();
+			if (targetReached)
+			{
+				IsWalking = false;
+				ScanForAttack = true;
+			}
+			else
 			{
 				if (NavAgent != null)
 				{
@@ -92,12 +116,78 @@ public partial class EnemyCharacter : CharacterBody3D
 						GlobalTransform = GlobalTransform.LookingAt(next with { Y = GlobalPosition.Y });
 					}
 				}
+				ScanForAttack = false;
+			}
+		}
+
+		if (ScanForAttack)
+		{
+			if (NextScanIn <= 0)
+			{
+				NextScanIn = ScanInterval;
+				ScanAttack();
 			}
 			else
 			{
-				IsWalking = false;
+				NextScanIn -= delta;
 			}
 		}
 	}
 
+	protected void ScanAttack()
+	{
+		var attackScanShape = new SphereShape3D()
+		{
+			Radius = AttackDistance,
+		};
+		var query = new PhysicsShapeQueryParameters3D()
+		{
+			Shape = attackScanShape,
+			Transform = GlobalTransform,
+			CollisionMask = 1 << 30,
+			Exclude = [.. ExcludeAttackRid],
+		};
+
+		var results = GetViewport().FindWorld3D().DirectSpaceState.IntersectShape(query, maxResults: 1);
+		if (results.Count > 0)
+		{
+			var first = results[0];
+			if (first.TryGetValue("collider", out Variant outCollider))
+			{
+				var collider = outCollider.As<CharacterBody3D>();
+				if (collider != this)
+				{
+					GlobalTransform = GlobalTransform.LookingAt(collider.GlobalPosition with { Y = GlobalPosition.Y });
+					PerformAttack();
+				}
+			}
+		}
+
+	}
+
+	protected void PerformAttack()
+	{
+		if (AnimTree != null)
+		{
+			AnimTree.Active = false;
+		}
+
+		AnimPlayer?.Play("BasicActionAnimLibrary/Boxing");
+	}
+
+	protected void EndAttack()
+	{
+		if (AnimTree != null)
+		{
+			AnimTree.Active = true;
+		}
+	}
+
+	public void OnAnimationSigalRecieve(string signal)
+	{
+		if (signal == "AttackDone")
+		{
+			EndAttack();
+		}
+	}
 }
