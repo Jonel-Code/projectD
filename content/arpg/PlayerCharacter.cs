@@ -92,6 +92,8 @@ public partial class PlayerCharacter : CharacterBody3D
 
 	protected List<BoneHurtBox> BoneHurtBoxes = new();
 
+	protected Vector3 KnockbackForce = Vector3.Zero;
+
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -174,10 +176,32 @@ public partial class PlayerCharacter : CharacterBody3D
 		ProcessInputAction(delta);
 		ProcessGravity(delta);
 		SyncCameraToPlayer(delta);
+		IntegrateKnockback(delta);
 		MoveAndSlide();
+		ProcessKnockback(delta);
 		ProcessHurtBoxes(delta);
 	}
 
+	private void IntegrateKnockback(double delta)
+	{
+		// Velocity += Impulse * (float)delta;
+		GlobalPosition += KnockbackForce * (float)delta;
+	}
+
+
+	private void ProcessKnockback(double delta)
+	{
+		KnockbackForce = KnockbackForce.MoveToward(Vector3.Zero, (float)delta);
+	}
+
+	public void ApplyKnockBack(Vector3 force)
+	{
+		KnockbackForce = force;
+	}
+
+	public override void _Process(double delta)
+	{
+	}
 
 	private void ProcessHurtBoxes(double delta)
 	{
@@ -432,4 +456,5 @@ public partial class PlayerCharacter : CharacterBody3D
 			}
 		}
 	}
+
 }

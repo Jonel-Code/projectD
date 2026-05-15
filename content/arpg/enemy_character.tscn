@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://0ejrjojt2ib" path="res://src/components/AnimationSignalReciever.cs" id="2_53shm"]
 [ext_resource type="Animation" uid="uid://qoysenapn83o" path="res://addons/animations/mixamo/Rest.anim" id="3_1ki23"]
 [ext_resource type="PackedScene" uid="uid://bnoeclrew5uga" path="res://addons/animations/mixamo/Mesh/Soldier.tscn" id="3_5h6wp"]
+[ext_resource type="Script" uid="uid://dbsgqrirap7cs" path="res://src/components/HurtBoxComponent.cs" id="5_53shm"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_266n0"]
 
@@ -1116,7 +1117,7 @@ tracks/37/interp = 1
 tracks/37/loop_wrap = true
 tracks/37/keys = PackedFloat32Array(0, 1, 0.0014442188, 0, -0.011678151, 0.033333335, 1, 0.00018386789, 0, 0.046024896, 0.06666667, 1, -0.00079173537, 0, 0.10199017, 0.1, 1, -0.0011630831, 0, 0.15902548, 0.13333334, 1, -0.001425397, 0, 0.21354502, 0.16666667, 1, -0.0009747266, 0, 0.26675108, 0.2, 1, 0.00066353224, 0, 0.3217528, 0.23333333, 1, 0.003452382, 0, 0.38091773, 0.26666668, 1, 0.008146607, 0, 0.4448337, 0.3, 1, 0.012824818, 0, 0.51030356, 0.33333334, 1, 0.017476056, 0, 0.5712708, 0.36666667, 1, 0.021348123, 0, 0.62612784, 0.4, 1, 0.025601199, 0, 0.68140614, 0.43333334, 1, 0.029489802, 0, 0.7386097, 0.46666667, 1, 0.03210294, 0, 0.79630965, 0.5, 1, 0.034132656, 0, 0.855741, 0.53333336, 1, 0.035222318, 0, 0.91154087, 0.56666666, 1, 0.035485275, 0, 0.96593827, 0.6666667, 1, 0.035824496, 0, 1.1309365, 0.7, 1, 0.035207916, 0, 1.1862375, 0.73333335, 1, 0.03336099, 0, 1.2426792, 0.76666665, 1, 0.029171625, 0, 1.304601, 0.8, 1, 0.02417107, 0, 1.368562, 0.8333333, 1, 0.019192861, 0, 1.4256054, 0.8666667, 1, 0.014936502, 0, 1.4814236, 0.9, 1, 0.009490646, 0, 1.5354269, 0.93333334, 1, 0.005975302, 0, 1.5921322, 1, 1, 0.0023078467, 0, 1.7153457, 1.0333333, 1, 0.0014442242, 0, 1.7743338)
 
-[sub_resource type="Animation" id="Animation_7t7qa"]
+[sub_resource type="Animation" id="Animation_1ki23"]
 resource_name = "Armature|Boxing"
 length = 1.7333333
 tracks/0/type = "position_3d"
@@ -1392,9 +1393,15 @@ tracks/38/path = NodePath("AnimationSignalReciever")
 tracks/38/interp = 1
 tracks/38/loop_wrap = true
 tracks/38/keys = {
-"times": PackedFloat32Array(1.6483917),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0.46090865, 0.5483387, 1.6483917),
+"transitions": PackedFloat32Array(1, 1, 1),
 "values": [{
+"args": ["LeftHandAttackStart"],
+"method": &"SendAnimSignal"
+}, {
+"args": ["LeftHandAttackEnd"],
+"method": &"SendAnimSignal"
+}, {
 "args": ["AttackDone"],
 "method": &"SendAnimSignal"
 }]
@@ -1407,10 +1414,10 @@ _data = {
 &"Armature|Rest": ExtResource("3_1ki23"),
 &"Armature|Roundhouse Kick": SubResource("Animation_lxf08"),
 &"Armature|Walking": SubResource("Animation_fr1iy"),
-&"Boxing": SubResource("Animation_7t7qa")
+&"Boxing": SubResource("Animation_1ki23")
 }
 
-[node name="EnemyCharacter" type="CharacterBody3D" unique_id=46241334 node_paths=PackedStringArray("NavAgent", "AnimTree", "AnimPlayer")]
+[node name="EnemyCharacter" type="CharacterBody3D" unique_id=46241334 node_paths=PackedStringArray("NavAgent", "AnimTree", "AnimPlayer", "OwnCollsion", "Skeleton", "HurtBox")]
 collision_layer = 0
 script = ExtResource("1_5h6wp")
 NavAgent = NodePath("NavigationAgent3D")
@@ -1418,6 +1425,9 @@ AnimForwardVector = Vector3(0, 0, 1)
 AnimTree = NodePath("AnimationTree")
 AnimPlayer = NodePath("AnimationPlayer")
 AttackDistance = 1.1
+OwnCollsion = NodePath(".")
+Skeleton = NodePath("GeneralSkeleton")
+HurtBox = NodePath("HurtBoxComponent")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=992284214]
 target_desired_distance = 1.1
@@ -1445,43 +1455,50 @@ anim_player = NodePath("../AnimationPlayer")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1225707161]
 callback_mode_process = 0
 libraries/BasicActionAnimLibrary = SubResource("AnimationLibrary_53shm")
-speed_scale = 2.0
 
 [node name="GeneralSkeleton" parent="." unique_id=64661863 instance=ExtResource("3_5h6wp")]
 transform = Transform3D(-1.2, 0, 1.8119498e-07, 0, 1.2, 0, -1.8119498e-07, 0, -1.2, 0, 0, 0)
 bones/0/position = Vector3(0.0058043557, 0, -0.014985822)
-bones/1/position = Vector3(0, 0.775304, 0)
-bones/1/rotation = Quaternion(-0.016433842, -0.29886663, -0.007086094, 0.9541271)
-bones/2/rotation = Quaternion(0.040780876, 0.011851078, 0.01438005, 0.9989944)
-bones/3/rotation = Quaternion(0.06412506, 0.025067406, 0.010952943, 0.99756694)
-bones/4/rotation = Quaternion(0.06357556, 0.026401198, 0.011327853, 0.9975634)
-bones/5/rotation = Quaternion(0.08343682, 0.021631125, -0.041755438, 0.99540293)
-bones/6/rotation = Quaternion(0.15378495, 0.08701448, -0.11593348, 0.9774141)
-bones/8/rotation = Quaternion(0.5687092, 0.43831164, 0.48552227, -0.49871933)
-bones/9/rotation = Quaternion(0.2787835, 0.81408125, -0.50453454, 0.07068534)
-bones/10/rotation = Quaternion(0.58647096, -0.39915162, 0.5836594, 0.39505887)
-bones/11/rotation = Quaternion(-0.05300416, 0.7744777, 0.11943371, 0.61895925)
-bones/12/rotation = Quaternion(-0.093061216, 0.76624525, 0.07128484, 0.6317646)
-bones/13/rotation = Quaternion(0.4319549, 0.07274314, -0.02336219, 0.89865327)
-bones/14/scale = Vector3(1.0000155, 0.99999946, 0.99998474)
-bones/16/rotation = Quaternion(0.77016735, 2.1383166e-06, -0.092944175, 0.6310338)
-bones/17/rotation = Quaternion(0.6283419, 7.5101852e-06, -0.075821936, 0.7742335)
-bones/32/rotation = Quaternion(0.40567386, -0.54869777, -0.5933202, -0.42700183)
-bones/33/rotation = Quaternion(-0.28666377, 0.83194685, -0.4743601, -0.025902614)
-bones/34/rotation = Quaternion(0.6361766, 0.31309605, -0.6339898, 0.30871886)
-bones/35/rotation = Quaternion(-0.039133757, -0.7159854, -0.1123613, 0.6879014)
-bones/36/rotation = Quaternion(-0.06459957, -0.7968454, -0.10444049, 0.5915713)
-bones/37/rotation = Quaternion(0.4605727, -0.22021765, 0.013509894, 0.8597643)
+bones/1/position = Vector3(0, 0.8556967, 0)
+bones/1/rotation = Quaternion(-0.039032597, -0.3675049, -0.013657769, 0.9291018)
+bones/2/rotation = Quaternion(0.04869707, 0.04091787, -0.0089472085, 0.99793506)
+bones/3/rotation = Quaternion(0.09714971, 0.08066158, -0.017572898, 0.9918402)
+bones/4/rotation = Quaternion(0.097149834, 0.08066079, -0.01757137, 0.9918403)
+bones/5/rotation = Quaternion(-0.026597466, -0.010656842, 0.0021602262, 0.9995871)
+bones/6/rotation = Quaternion(-0.066804856, 0.17792381, -0.006144853, 0.98175484)
+bones/8/rotation = Quaternion(0.52224594, 0.46269786, 0.532615, -0.47905242)
+bones/9/rotation = Quaternion(0.048167218, 0.83889973, -0.53085023, 0.110114716)
+bones/10/rotation = Quaternion(0.29442492, -0.59659505, 0.30289796, 0.68237907)
+bones/11/rotation = Quaternion(-0.080451824, 0.7916957, 0.09778516, 0.59764844)
+bones/12/rotation = Quaternion(-0.21900576, 0.6734663, 0.20842192, 0.6745665)
+bones/13/rotation = Quaternion(5.334616e-06, 2.3394825e-06, 4.768372e-06, 1)
+bones/14/scale = Vector3(1.0000157, 0.9999997, 0.99998486)
+bones/16/rotation = Quaternion(0.15900606, -0.0011496769, -0.0050152675, 0.9872643)
+bones/17/rotation = Quaternion(-7.748604e-07, 5.9604645e-08, 8.702278e-06, 1)
+bones/32/rotation = Quaternion(0.4876845, -0.48757756, -0.5792805, -0.4345872)
+bones/33/rotation = Quaternion(0.18588573, 0.83813554, -0.50592977, -0.08372846)
+bones/34/rotation = Quaternion(0.3033659, 0.66360766, -0.22111362, 0.6470725)
+bones/35/rotation = Quaternion(0.14888373, -0.7379474, 0.0077566747, 0.6581847)
+bones/36/rotation = Quaternion(-0.110812016, -0.75279886, -0.09005791, 0.6425763)
+bones/37/rotation = Quaternion(-8.940695e-08, -1.3411044e-07, 5.9604634e-08, 1)
 bones/38/scale = Vector3(1.0000161, 0.9999998, 0.99998415)
-bones/40/rotation = Quaternion(0.705383, -2.961606e-07, 0.085963495, 0.7035944)
-bones/41/rotation = Quaternion(0.52649415, -4.5448547e-07, 0.06416289, 0.8477542)
-bones/56/rotation = Quaternion(0.060540088, 0.3263529, 0.92661923, -0.17665124)
-bones/57/rotation = Quaternion(-0.052532334, 0.91085273, -0.39623576, -0.102883846)
-bones/58/rotation = Quaternion(-0.24876559, 0.6147999, -0.7452416, 0.068933435)
-bones/59/rotation = Quaternion(-0.0036386475, 0.9911839, 0.024562806, 0.13014627)
-bones/61/rotation = Quaternion(-0.12347973, -9.782418e-06, 0.9756242, 0.18141186)
-bones/62/rotation = Quaternion(0.030660711, 0.9240197, -0.37797216, -0.04883317)
-bones/63/rotation = Quaternion(0.1566398, 0.44276252, -0.86508274, -0.17623068)
-bones/64/rotation = Quaternion(0.0037342464, 0.9911073, 0.023143591, -0.1309844)
+bones/40/rotation = Quaternion(0.14711995, 0.00023829498, 0.009836425, 0.98906976)
+bones/41/rotation = Quaternion(2.9802322e-08, 2.9802322e-08, 1.3411045e-07, 1)
+bones/56/rotation = Quaternion(0.07567843, 0.23435766, 0.96331996, -0.10660206)
+bones/57/rotation = Quaternion(0.037190866, 0.95092005, -0.28381547, -0.11754465)
+bones/58/rotation = Quaternion(-0.04978034, 0.69039893, -0.71953225, 0.056076147)
+bones/59/rotation = Quaternion(0.02111539, 0.99108624, 0.050047074, 0.12164579)
+bones/61/rotation = Quaternion(-0.12123893, -0.008553229, 0.98237073, 0.14204189)
+bones/62/rotation = Quaternion(0.023334993, 0.9625803, -0.2599032, -0.07311028)
+bones/63/rotation = Quaternion(0.11188096, 0.55702764, -0.8131758, -0.12628566)
+bones/64/rotation = Quaternion(0.008918387, 0.99018824, 0.039033685, -0.13388175)
+
+[node name="HurtBoxComponent" type="Node" parent="." unique_id=55530474 node_paths=PackedStringArray("Skeleton")]
+unique_name_in_owner = true
+script = ExtResource("5_53shm")
+Skeleton = NodePath("../GeneralSkeleton")
+Debug = true
+metadata/_custom_type_script = "uid://dbsgqrirap7cs"
 
 [connection signal="AnimSignal" from="AnimationSignalReciever" to="." method="OnAnimationSigalRecieve"]
+[connection signal="HurtBoxHit" from="HurtBoxComponent" to="." method="HitSomething"]
