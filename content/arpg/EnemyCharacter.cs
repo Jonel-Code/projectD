@@ -54,7 +54,10 @@ public partial class EnemyCharacter : CharacterBody3D
 	{
 		IsWalking = false;
 		ExcludeAttackRid.Add(GetRid());
-
+		if (AnimTree != null)
+		{
+			AnimTree.Active = true;
+		}
 	}
 
 
@@ -215,10 +218,11 @@ public partial class EnemyCharacter : CharacterBody3D
 				"LeftHand",
 				new SphereShape3D()
 				{
-					Radius = 0.5f,
+					Radius = 0.2f,
 				},
 				 AttackHitMask,
-				[.. ExcludeAttackRid]);
+				[.. ExcludeAttackRid]
+				);
 		}
 
 		if (signal == "LeftHandAttackEnd")
@@ -238,8 +242,8 @@ public partial class EnemyCharacter : CharacterBody3D
 				if (hit is PlayerCharacter hitChar)
 				{
 					var charPos = hitChar.GlobalPosition;
-					var direction = (globalPos - charPos).Normalized();
-					hitChar.ApplyKnockBack(direction);
+					var direction = (charPos - GlobalPosition).Normalized();
+					hitChar.ApplyKnockBack(direction * 2);
 				}
 			}
 		}
